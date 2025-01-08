@@ -3,12 +3,12 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "Test Hub (W.I.P)",
    Icon = 0,
-   LoadingTitle = "Diorxxz", 
-   LoadingSubtitle = "by John Gaming",
+   LoadingTitle = "Diorxxz",
+   LoadingSubtitle = "by John Gaming", 
    Theme = "Default",
    DisableRayfieldPrompts = false,
    DisableBuildWarnings = false,
-   
+
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil,
@@ -17,7 +17,7 @@ local Window = Rayfield:CreateWindow({
 
    Discord = {
       Enabled = true,
-      Invite = "gTP4egtf",
+      Invite = "https://discord.gg/gTP4egtf",
       RememberJoins = true
    },
 
@@ -54,29 +54,49 @@ Rayfield:Notify({
 local Button = MainTab:CreateButton({
    Name = "Infinite Jump Toggle",
    Callback = function()
-      _G.infinjump = not _G.infinjump
+       _G.infinjump = not _G.infinjump
 
-      if _G.infinJumpStarted == nil then
-         _G.infinJumpStarted = true
-         
-         game.StarterGui:SetCore("SendNotification", {
-            Title = "Youtube Hub",
-            Text = "Infinite Jump Activated!",
-            Duration = 5
-         })
+       if _G.infinJumpStarted == nil then
+           _G.infinJumpStarted = true
+           
+           game.StarterGui:SetCore("SendNotification", {Title="Youtube Hub"; Text="Infinite Jump Activated!"; Duration=5;})
 
-         local plr = game:GetService('Players').LocalPlayer
-         local m = plr:GetMouse()
-         m.KeyDown:connect(function(k)
-            if _G.infinjump then
-               if k:byte() == 32 then
-                  local humanoid = game:GetService'Players'.LocalPlayer.Character:FindFirstChildOfClass('Humanoid')
-                  humanoid:ChangeState('Jumping')
-                  wait()
-                  humanoid:ChangeState('Seated')
+           local plr = game:GetService('Players').LocalPlayer
+           local m = plr:GetMouse()
+           m.KeyDown:connect(function(k)
+               if _G.infinjump then
+                   if k:byte() == 32 then
+                       humanoid = game:GetService'Players'.LocalPlayer.Character:FindFirstChildOfClass('Humanoid')
+                       humanoid:ChangeState('Jumping')
+                       wait()
+                       humanoid:ChangeState('Seated')
+                   end
                end
-            end
-         end)
-      end
+           end)
+       end
+   end,
+})
+
+local Slider = MainTab:CreateSlider({
+   Name = "WalkSpeed Slider",
+   Range = {1, 350},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "sliderws",
+   Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+   end,
+})
+
+local Slider = MainTab:CreateSlider({
+   Name = "JumpPower Slider",
+   Range = {1, 350},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "sliderjp",
+   Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
    end,
 })
