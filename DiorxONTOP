@@ -100,3 +100,10 @@ local Slider = MainTab:CreateSlider({
         game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
    end,
 })
+
+local Button = Tab:CreateButton({
+   Name = "Camlock Script",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/brosula123/CAMLOCK/main/SKIBIDI"))()
+   end,
+})
