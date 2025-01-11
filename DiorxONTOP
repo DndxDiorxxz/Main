@@ -80,7 +80,7 @@ local Button = MainTab:CreateButton({
 local Button = Tab:CreateButton({
    Name = CAMLOCK SCRIPT",
    Callback = function()
-   -- The function that takes place when the button is pressed
+  loadstring(game:HttpGet("https://raw.githubusercontent.com/brosula123/CAMLOCK/main/SKIBIDI"))()
    end,
 })
 
