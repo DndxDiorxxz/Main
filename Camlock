@@ -1,0 +1,37 @@
+local player = game.Players.LocalPlayer
+local camera = workspace.CurrentCamera
+local mouse = player:GetMouse()
+
+local target = nil
+local isCamLocked = false
+
+local function toggleCamlock()
+    if not isCamLocked then
+        local targetPart = mouse.Target
+        if targetPart and targetPart:IsA("BasePart") then
+            target = targetPart
+            isCamLocked = true
+            print("Camlock enabled on:", target.Name)
+        else
+            print("No valid target found!")
+        end
+    else
+        isCamLocked = false
+        target = nil
+        print("Camlock disabled.")
+    end
+end
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    if isCamLocked and target then
+        local targetPosition = target.Position
+        local cameraOffset = Vector3.new(0, 5, 10)
+        camera.CFrame = CFrame.new(targetPosition + cameraOffset, targetPosition)
+    end
+end)
+
+mouse.KeyDown:Connect(function(key)
+    if key:lower() == "q" then
+        toggleCamlock()
+    end
+end)
