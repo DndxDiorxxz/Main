@@ -77,6 +77,13 @@ local Button = MainTab:CreateButton({
    end,
 })
 
+local Button = Tab:CreateButton({
+   Name = CAMLOCK SCRIPT",
+   Callback = function()
+   -- The function that takes place when the button is pressed
+   end,
+})
+
 local Slider = MainTab:CreateSlider({
    Name = "WalkSpeed Slider",
    Range = {1, 350},
