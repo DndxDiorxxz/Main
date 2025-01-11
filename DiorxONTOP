@@ -104,6 +104,11 @@ local Slider = MainTab:CreateSlider({
 local Button = Tab:CreateButton({
    Name = "Camlock Script",
    Callback = function()
-   loadstring(game:HttpGet("https://raw.githubusercontent.com/brosula123/CAMLOCK/main/SKIBIDI"))()
+       local success, err = pcall(function()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/brosula123/CAMLOCK/main/SKIBIDI"))()
+       end)
+       if not success then
+           warn("Error loading script: " .. err)
+       end
    end,
 })
