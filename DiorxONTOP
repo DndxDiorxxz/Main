@@ -94,21 +94,3 @@ local Slider = MainTab:CreateSlider({
    Range = {1, 350},
    Increment = 1,
    Suffix = "Speed",
-   CurrentValue = 16,
-   Flag = "sliderjp",
-   Callback = function(Value)
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
-   end,
-})
-
-local Button = Tab:CreateButton({
-   Name = "Camlock Script",
-   Callback = function()
-       local success, err = pcall(function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/brosula123/CAMLOCK/main/SKIBIDI"))()
-       end)
-       if not success then
-           warn("Error loading script: " .. err)
-       end
-   end,
-})
