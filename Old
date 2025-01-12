@@ -15,11 +15,19 @@ local Window = Rayfield:CreateWindow({
       FileName = "Big Hub"
    },
 
-   Discord = {
-      Enabled = true,
-      Invite = "gTP4egtf",
-      RememberJoins = true
-   },
+   -- Add this under the other buttons
+local DiscordButton = MainTab:CreateButton({
+   Name = "Join Discord Server",
+   Callback = function()
+       local DiscordInvite = "https://discord.gg/gTP4egtf" -- Replace with your invite link
+       setclipboard(DiscordInvite) -- Copies the link to the clipboard
+       game.StarterGui:SetCore("SendNotification", {
+           Title = "Discord Invite",
+           Text = "Link copied to clipboard! Paste in your browser to join.",
+           Duration = 5
+       })
+   end,
+})
 
    KeySystem = true,
    KeySettings = {
