@@ -29,7 +29,7 @@ local Window = Rayfield:CreateWindow({
       FileName = "Key",
       SaveKey = false,
       GrabKeyFromSite = true,
-      Key = {"https://pastebin.com/8GYyUtaa"}
+      Key = {"https://pastebin.com/raw/8GYyUtaa"}
    }
 })
 
