@@ -51,6 +51,7 @@ Rayfield:Notify({
    },
 })
 
+-- Infinite Jump Button
 local Button = MainTab:CreateButton({
    Name = "Infinite Jump Toggle",
    Callback = function()
@@ -77,14 +78,16 @@ local Button = MainTab:CreateButton({
    end,
 })
 
-local Button = Tab:CreateButton({
+-- CAMLOCK SCRIPT Button
+local CamlockButton = MainTab:CreateButton({
    Name = "CAMLOCK SCRIPT",
    Callback = function()
-  loadstring(game:HttpGet("https://raw.githubusercontent.com/brosula123/CAMLOCK/main/SKIBIDI"))()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/brosula123/CAMLOCK/main/SKIBIDI"))()
    end,
 })
 
-local Slider = MainTab:CreateSlider({
+-- WalkSpeed Slider
+local WalkSpeedSlider = MainTab:CreateSlider({
    Name = "WalkSpeed Slider",
    Range = {1, 350},
    Increment = 1,
@@ -96,15 +99,15 @@ local Slider = MainTab:CreateSlider({
    end,
 })
 
-local Slider = MainTab:CreateSlider({
+-- JumpPower Slider
+local JumpPowerSlider = MainTab:CreateSlider({
    Name = "JumpPower Slider",
    Range = {1, 350},
    Increment = 1,
    Suffix = "Speed",
    CurrentValue = 16, 
    Flag = "sliderjp", 
--- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps 
    Callback = function(Value) 
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value) 
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value 
    end, 
 })
