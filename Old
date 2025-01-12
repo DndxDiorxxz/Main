@@ -1,9 +1,9 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Premium Hub(W.I.P)",
+   Name = "Roblox Script Hub(W.I.P)",
    Icon = 0,
-   LoadingTitle = "PREMIUM HUB SCRIPT",
+   LoadingTitle = "Roblox HUB SCRIPT",
    LoadingSubtitle = "by John Gaming", 
    Theme = "Default",
    DisableRayfieldPrompts = false,
@@ -24,10 +24,10 @@ local Window = Rayfield:CreateWindow({
    KeySystem = true,
    KeySettings = {
       Title = "Key System",
-      Subtitle = "Premium Hub Key System",
+      Subtitle = "Roblox Hub Key System",
       Note = "Get Key here https://pastebin.com/raw/BGqxSyDf",
       FileName = "Key",
-      SaveKey = true,
+      SaveKey = false,
       GrabKeyFromSite = true,
       Key = {"https://pastebin.com/raw/BGqxSyDf"}
    }
