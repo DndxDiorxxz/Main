@@ -25,11 +25,11 @@ local Window = Rayfield:CreateWindow({
    KeySettings = {
       Title = "Key System",
       Subtitle = "Premium Hub Key System",
-      Note = "Get Key here https://pastebin.com/8GYyUtaa",
+      Note = "Get Key here https://pastebin.com/raw/BGqxSyDf",
       FileName = "Key",
-      SaveKey = false,
+      SaveKey = true,
       GrabKeyFromSite = true,
-      Key = {"https://pastebin.com/raw/8GYyUtaa"}
+      Key = {"https://pastebin.com/raw/BGqxSyDf"}
    }
 })
 
