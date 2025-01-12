@@ -1,11 +1,11 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Premuim Script Hub(W.I.P)",
+   Name = "Premium Script Hub(W.I.P)",
    Icon = 0,
    LoadingTitle = "PREMIUM HUB SCRIPT",
    LoadingSubtitle = "by John Gaming", 
-   Theme = "Default",
+   Theme = "Space",
    DisableRayfieldPrompts = false,
    DisableBuildWarnings = false,
 
@@ -31,13 +31,13 @@ local Window = Rayfield:CreateWindow({
       GrabKeyFromSite = true,
       Key = {"https://pastebin.com/raw/BGqxSyDf"}
    }
-}) 
+})
 
 local MainTab = Window:CreateTab("Home", 4483362458)
 local MainSection = MainTab:CreateSection("Section Example")
 
 Rayfield:Notify({
-   Title = "You executed the script",
+   Title = "You executed the PREMUIM script",
    Content = "Enjoy",
    Duration = 5,
    Image = 13047715178,
@@ -102,143 +102,12 @@ local Fischbutton = MainTab:CreateButton({
    end,
 })
 
--- JUJUTSU INFINITE BUTTON
+-- JUJUTSU INFINITE SCRIPT BUTTON
 local JujutsuinfiniteButton = MainTab:CreateButton ({
    Name = "JUJUTSU INFINITE SCRIPT",
    Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Script-Games/refs/heads/main/Jujutsu%20Infinite.lua"))()
-   end,
-})
-
--- WalkSpeed Slider
-local WalkSpeedSlider = MainTab:CreateSlider({
-   Name = "WalkSpeed Slider",
-   Range = {1, 350},
-   Increment = 1,
-   Suffix = "Speed",
-   CurrentValue = 16,
-   Flag = "sliderws",
-   Callback = function(Value)
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-   end,
-})
-
--- JumpPower Slider
-local JumpPowerSlider = MainTab:CreateSlider({
-   Name = "JumpPower Slider",
-   Range = {1, 350},
-   Increment = 1,
-   Suffix = "Speed",
-   Culocal Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-
-local Window = Rayfield:CreateWindow({
-   Name = "Premuim Script Hub(W.I.P)",
-   Icon = 0,
-   LoadingTitle = "PREMIUM HUB SCRIPT",
-   LoadingSubtitle = "by John Gaming", 
-   Theme = "Default",
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false,
-
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil,
-      FileName = "Big Hub"
-   },
-
-   Discord = {
-      Enabled = true,
-      Invite = "gTP4egtf",
-      RememberJoins = true
-   },
-
-   KeySystem = true,
-   KeySettings = {
-      Title = "Key System",
-      Subtitle = "Premium Hub Key System",
-      Note = "Get Key here https://pastebin.com/BGqxSyDf",
-      FileName = "Key",
-      SaveKey = false,
-      GrabKeyFromSite = true,
-      Key = {"https://pastebin.com/raw/BGqxSyDf"}
-   }
-}) 
-
-local MainTab = Window:CreateTab("Home", 4483362458)
-local MainSection = MainTab:CreateSection("Section Example")
-
-Rayfield:Notify({
-   Title = "You executed the script",
-   Content = "Enjoy",
-   Duration = 5,
-   Image = 13047715178,
-   Actions = {
-      Ignore = {
-         Name = "Okay!",
-         Callback = function()
-            print("The user tapped Okay!")
-         end
-      },
-   },
-})
-
--- Infinite Jump Button
-local Button = MainTab:CreateButton({
-   Name = "Infinite Jump Toggle",
-   Callback = function()
-       _G.infinjump = not _G.infinjump
-
-       if _G.infinJumpStarted == nil then
-           _G.infinJumpStarted = true
-           
-           game.StarterGui:SetCore("SendNotification", {Title="Youtube Hub"; Text="Infinite Jump Activated!"; Duration=5;})
-
-           local plr = game:GetService('Players').LocalPlayer
-           local m = plr:GetMouse()
-           m.KeyDown:connect(function(k)
-               if _G.infinjump then
-                   if k:byte() == 32 then
-                       humanoid = game:GetService'Players'.LocalPlayer.Character:FindFirstChildOfClass('Humanoid')
-                       humanoid:ChangeState('Jumping')
-                       wait()
-                       humanoid:ChangeState('Seated')
-                   end
-               end
-           end)
-       end
-   end,
-})
-
--- CAMLOCK SCRIPT Button
-local CamlockButton = MainTab:CreateButton({
-   Name = "CAMLOCK SCRIPT",
-   Callback = function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/brosula123/CAMLOCK/main/SKIBIDI"))()
-   end,
-})
-
--- BLOX FRUIT SCRIPT BUTTON
-local BloxfruitButton = MainTab:CreateButton({
-   Name = "BLOXFRUIT SCRIPT",
-   Callback = function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/LuaCrack/Min/refs/heads/main/MinSeHub"))()
-   end,
-})
-
--- FISCH SCRIPT BUTTON 
-local Fischbutton = MainTab:CreateButton({
-   Name = "FISCH SCRIPT",
-   Callback = function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/Just3itx/Lunor-Loadstrings/refs/heads/main/Loader"))()
-   end,
-})
-
--- JUJUTSU INFINITE BUTTON
-local JujutsuinfiniteButton = MainTab:CreateButton ({
-   Name = "JUJUTSU INFINITE SCRIPT",
-   Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Script-Games/refs/heads/main/Jujutsu%20Infinite.lua"))()
-   end,
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Script-Games/refs/heads/main/Jujutsu%20Infinite.lua"))()
+   end
 })
 
 -- WalkSpeed Slider
@@ -261,12 +130,6 @@ local JumpPowerSlider = MainTab:CreateSlider({
    Increment = 1,
    Suffix = "Speed",
    CurrentValue = 16, 
-   Flag = "sliderjp", 
-   Callback = function(Value) 
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value 
-   end, 
-})
-rrentValue = 16, 
    Flag = "sliderjp", 
    Callback = function(Value) 
         game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value 
