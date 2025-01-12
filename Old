@@ -1,9 +1,9 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Test Hub (W.I.P)",
+   Name = "Premium Hub(W.I.P)",
    Icon = 0,
-   LoadingTitle = "Diorxxz",
+   LoadingTitle = "PREMIUM HUB SCRIPT",
    LoadingSubtitle = "by John Gaming", 
    Theme = "Default",
    DisableRayfieldPrompts = false,
@@ -15,25 +15,17 @@ local Window = Rayfield:CreateWindow({
       FileName = "Big Hub"
    },
 
-   -- Add this under the other buttons
-local DiscordButton = MainTab:CreateButton({
-   Name = "Join Discord Server",
-   Callback = function()
-       local DiscordInvite = "https://discord.gg/gTP4egtf" -- Replace with your invite link
-       setclipboard(DiscordInvite) -- Copies the link to the clipboard
-       game.StarterGui:SetCore("SendNotification", {
-           Title = "Discord Invite",
-           Text = "Link copied to clipboard! Paste in your browser to join.",
-           Duration = 5
-       })
-   end,
-})
+   Discord = {
+      Enabled = true,
+      Invite = "gTP4egtf",
+      RememberJoins = true
+   },
 
    KeySystem = true,
    KeySettings = {
-      Title = "Test Hub | Key",
-      Subtitle = "Get Key From Here https://pastebin.com/8GYyUtaa",
-      Note = "THIS IS ONLY FOR TEST!!",
+      Title = "Key System",
+      Subtitle = "Premium Hub Key System",
+      Note = "Get Key here https://pastebin.com/8GYyUtaa",
       FileName = "Key",
       SaveKey = false,
       GrabKeyFromSite = true,
