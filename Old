@@ -94,6 +94,14 @@ local BloxfruitButton = MainTab:CreateButton({
    end,
 })
 
+-- FISCH SCRIPT BUTTON 
+local Fischbutton = MainTab:CreateButton({
+   Name = "FISCH SCRIPT",
+   Callback = function()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/Just3itx/Lunor-Loadstrings/refs/heads/main/Loader"))()
+   end,
+})
+
 -- WalkSpeed Slider
 local WalkSpeedSlider = MainTab:CreateSlider({
    Name = "WalkSpeed Slider",
