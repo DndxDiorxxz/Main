@@ -78,7 +78,7 @@ local Button = MainTab:CreateButton({
 })
 
 local Button = Tab:CreateButton({
-   Name = CAMLOCK SCRIPT",
+   Name = "CAMLOCK SCRIPT",
    Callback = function()
   loadstring(game:HttpGet("https://raw.githubusercontent.com/brosula123/CAMLOCK/main/SKIBIDI"))()
    end,
