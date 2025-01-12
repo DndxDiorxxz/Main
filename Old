@@ -25,11 +25,11 @@ local Window = Rayfield:CreateWindow({
    KeySettings = {
       Title = "Key System",
       Subtitle = "Roblox Hub Key System",
-      Note = "Get Key here https://pastebin.com/raw/BGqxSyDf",
+      Note = "Get Key here https://pastebin.com/8GYyUtaa",
       FileName = "Key",
       SaveKey = false,
       GrabKeyFromSite = true,
-      Key = {"https://pastebin.com/raw/BGqxSyDf"}
+      Key = {"https://pastebin.com/8GYyUtaa"}
    }
 })
 
