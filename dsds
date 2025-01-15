@@ -1,0 +1,67 @@
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local Teams = game:GetService("Teams")
+local Camera = workspace.CurrentCamera
+
+local camlockEnabled = false
+local target = nil
+
+-- Function to find the closest enemy player
+local function getClosestEnemy()
+    local closestDistance = math.huge
+    local closestPlayer = nil
+    local localPlayer = Players.LocalPlayer
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            -- Ignore teammates
+            if not player.Team or player.Team ~= localPlayer.Team then
+                local distance = (player.Character.HumanoidRootPart.Position - localPlayer.Character.HumanoidRootPart.Position).magnitude
+                if distance < closestDistance then
+                    closestDistance = distance
+                    closestPlayer = player
+                end
+            end
+        end
+    end
+
+    return closestPlayer
+end
+
+-- Function to lock the camera onto the target
+local function lockCamera()
+    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+        Camera.CFrame = CFrame.new(Camera.CFrame.Position, target.Character.HumanoidRootPart.Position)
+    else
+        camlockEnabled = false -- Disable if target is invalid
+        print("Target lost. Camlock disabled.")
+    end
+end
+
+-- Toggle Camlock
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.E then -- Press 'E' to toggle Camlock
+        camlockEnabled = not camlockEnabled
+
+        if camlockEnabled then
+            target = getClosestEnemy()
+            if target then
+                print("Camlock enabled on: " .. target.Name)
+            else
+                print("No enemy target found. Camlock disabled.")
+                camlockEnabled = false
+            end
+        else
+            print("Camlock disabled.")
+            target = nil
+        end
+    end
+end)
+
+-- Continuously update the camera when Camlock is enabled
+RunService.RenderStepped:Connect(function()
+    if camlockEnabled then
+        lockCamera()
+    end
+end)
