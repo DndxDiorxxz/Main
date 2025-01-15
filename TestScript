@@ -147,10 +147,10 @@ local JumpPowerSlider = MainTab:CreateSlider({
 local SecondTab = Window:CreateTab("Second Tab, Pc Version", 4483362458)
 local SecondSection = MainTab:CreateSection("Section Example")
 
--- CAMLOCK SCRIPT Button
-local CamlockButton = MainTab:CreateButton({
+-- AIMBOT SCRIPT Button FOR PC
+local AimbotButton = MainTab:CreateButton({
    Name = "Aimbot ONLY FOR PC",
    Callback = function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/brosula123/CAMLOCK/main/SKIBIDI"))()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/DndxDiorxxz/Main/refs/heads/main/dsds"))()
    end,
 })
