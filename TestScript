@@ -148,7 +148,6 @@ local SecondTab = Window:CreateTab("Second Tab, Pc Version", 4483362458)
 local SecondSection = SecondTab:CreateSection("Pc Section")
 
 
--- AIMBOT SCRIPT Button FOR PC
 local AimbotButton = SecondTab:CreateButton({
    Name = "Aimbot ONLY FOR PC",
    Callback = function()
