@@ -4,7 +4,7 @@ local Window = Rayfield:CreateWindow({
    Name = "Roblox Script Hub(W.I.P)",
    Icon = "rbxassetid://12345678", -- Replace with a valid asset ID
    LoadingTitle = "Roblox HUB SCRIPT",
-   LoadingSubtitle = "by John Gaming", 
+   LoadingSubtitle = "by John Gaming",
    Theme = "Space",
    DisableRayfieldPrompts = false,
    DisableBuildWarnings = false,
@@ -60,7 +60,7 @@ local Button = MainTab:CreateButton({
        if _G.infinJumpStarted == nil then
            _G.infinJumpStarted = true
            
-           game.StarterGui:SetCore("SendNotification", {Title="Youtube Hub"; Text="Infinite Jump Activated!"; Duration=5;})
+           game.StarterGui:SetCore("SendNotification", {Title = "Youtube Hub"; Text = "Infinite Jump Activated!"; Duration = 5;})
 
            local plr = game:GetService('Players').LocalPlayer
            local m = plr:GetMouse()
@@ -78,11 +78,11 @@ local Button = MainTab:CreateButton({
    end,
 })
 
-local ThirdTab = Window:CreateTab("Settings",) -- Title, Image
-local ThirdSection = Tab:CreateSection("Settings")
+local ThirdTab = Window:CreateTab("Settings", 4483362458) -- Title, Image
+local ThirdSection = ThirdTab:CreateSection("Settings")
 
 -- Discord Server Button
-local DiscordButton = Window:CreateTab("Settings", 4483362458):CreateButton({
+local DiscordButton = ThirdTab:CreateButton({
    Name = "Discord Server",
    Callback = function()
        local copy = "https://discord.gg/GPn7rgknhC"
