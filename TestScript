@@ -148,4 +148,4 @@ local SecondTab = Window:CreateTab("Second Tab, Pc Version", 4483362458)
 local SecondSection = SecondTab:CreateSection("Pc Section")
 
 
-local Paragraph = Tab:CreateParagraph({Title = "Paragraph Example", Content = "Paragraph Example"})
+local Paragraph = SecondTab:CreateParagraph({Title = "Paragraph Example", Content = "Paragraph Example"})
