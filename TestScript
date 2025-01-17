@@ -2,7 +2,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "Roblox Script Hub(W.I.P)",
-   Icon = 0,
+   Icon = "rbxassetid://12345678", -- Replace with a valid asset ID
    LoadingTitle = "Roblox HUB SCRIPT",
    LoadingSubtitle = "by John Gaming", 
    Theme = "Space",
@@ -29,7 +29,7 @@ local Window = Rayfield:CreateWindow({
       FileName = "Key",
       SaveKey = false,
       GrabKeyFromSite = true,
-      Key = {"https://pastebin.com/raw/8GYyUtaa"}
+      Key = "https://pastebin.com/raw/8GYyUtaa"
    }
 })
 
@@ -64,10 +64,10 @@ local Button = MainTab:CreateButton({
 
            local plr = game:GetService('Players').LocalPlayer
            local m = plr:GetMouse()
-           m.KeyDown:connect(function(k)
+           m.KeyDown:Connect(function(k)
                if _G.infinjump then
                    if k:byte() == 32 then
-                       humanoid = game:GetService'Players'.LocalPlayer.Character:FindFirstChildOfClass('Humanoid')
+                       local humanoid = game:GetService('Players').LocalPlayer.Character:FindFirstChildOfClass('Humanoid')
                        humanoid:ChangeState('Jumping')
                        wait()
                        humanoid:ChangeState('Seated')
@@ -78,71 +78,12 @@ local Button = MainTab:CreateButton({
    end,
 })
 
--- CAMLOCK SCRIPT Button
-local CamlockButton = MainTab:CreateButton({
-   Name = "CAMLOCK SCRIPT (ONLY MOBILE)",
+-- Discord Server Button
+local DiscordButton = Window:CreateTab("Settings", 4483362458):CreateButton({
+   Name = "Discord Server",
    Callback = function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/brosula123/CAMLOCK/main/SKIBIDI"))()
+       local copy = "https://discord.gg/GPn7rgknhC"
+       setclipboard(copy)
+       print("Discord link copied to clipboard!")
    end,
 })
-
--- BLOX FRUIT SCRIPT BUTTON
-local BloxfruitButton = MainTab:CreateButton({
-   Name = "BLOXFRUIT SCRIPT",
-   Callback = function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/LuaCrack/Min/refs/heads/main/MinSeHub"))()
-   end,
-})
-
--- FISCH SCRIPT BUTTON 
-local Fischbutton = MainTab:CreateButton({
-   Name = "FISCH SCRIPT",
-   Callback = function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/Just3itx/Lunor-Loadstrings/refs/heads/main/Loader"))()
-   end,
-})
-
--- JUJUTSU INFINITE SCRIPT BUTTON
-local JujutsuinfiniteButton = MainTab:CreateButton({
-   Name = "JUJUTSU INFINITE SCRIPT",
-   Callback = function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Script-Games/refs/heads/main/Jujutsu%20Infinite.lua"))()
-   end
-})
-
--- PETS GO SCRIPT BUTTON
-local PetsgoButton = MainTab:CreateButton({
-   Name = "PETS GO SCRIPT",
-   Callback = function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))()
-   end
-})
-
--- WalkSpeed Slider
-local WalkSpeedSlider = MainTab:CreateSlider({
-   Name = "WalkSpeed Slider",
-   Range = {1, 350},
-   Increment = 1,
-   Suffix = "Speed",
-   CurrentValue = 16,
-   Flag = "sliderws",
-   Callback = function(Value)
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-   end,
-})
-
--- JumpPower Slider
-local JumpPowerSlider = MainTab:CreateSlider({
-   Name = "JumpPower Slider",
-   Range = {1, 350},
-   Increment = 1,
-   Suffix = "Speed",
-   CurrentValue = 16, 
-   Flag = "sliderjp", 
-   Callback = function(Value) 
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value 
-   end, 
-})
-
-local SecondTab = Window:CreateTab("Second Tab, Pc Version", 4483362458)
-local SecondSection = SecondTab:CreateSection("Pc Section")
