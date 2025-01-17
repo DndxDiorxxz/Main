@@ -1,9 +1,9 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Premium Script Hub(W.I.P)",
+   Name = "Roblox Script Hub(W.I.P)",
    Icon = 0,
-   LoadingTitle = "PREMIUM HUB SCRIPT",
+   LoadingTitle = "Roblox HUB SCRIPT",
    LoadingSubtitle = "by John Gaming", 
    Theme = "Space",
    DisableRayfieldPrompts = false,
@@ -25,11 +25,11 @@ local Window = Rayfield:CreateWindow({
    KeySettings = {
       Title = "Key System",
       Subtitle = "Premium Hub Key System",
-      Note = "Get Key here https://pastebin.com/BGqxSyDf",
+      Note = "Get Key here https://pastebin.com/8GYyUtaa",
       FileName = "Key",
       SaveKey = false,
       GrabKeyFromSite = true,
-      Key = {"https://pastebin.com/raw/BGqxSyDf"}
+      Key = {"https://pastebin.com/raw/8GYyUtaa"}
    }
 })
 
@@ -37,7 +37,7 @@ local MainTab = Window:CreateTab("Home", 4483362458)
 local MainSection = MainTab:CreateSection("Mobile Script Section")
 
 Rayfield:Notify({
-   Title = "You executed the PREMUIM script",
+   Title = "You executed the Free script",
    Content = "Enjoy",
    Duration = 5,
    Image = 13047715178,
