@@ -78,6 +78,9 @@ local Button = MainTab:CreateButton({
    end,
 })
 
+local ThirdTab = Window:CreateTab("Settings", 4483362458) -- Title, Image
+local ThirdSection = Tab:CreateSection("Settings")
+
 -- Discord Server Button
 local DiscordButton = Window:CreateTab("Settings", 4483362458):CreateButton({
    Name = "Discord Server",
