@@ -157,3 +157,5 @@ local AimbotButton = SecondTab:CreateButton({
 
 local ThirdTab = Window:CreateTab("Settings", 4483362458)
 local ThirdSection = ThirdTab:CreateSection("Settings")
+
+
