@@ -146,19 +146,3 @@ local JumpPowerSlider = MainTab:CreateSlider({
 
 local SecondTab = Window:CreateTab("Second Tab, Pc Version", 4483362458)
 local SecondSection = SecondTab:CreateSection("Pc Section")
-
-
-
-
-
-
-local ThirdTab = Window:CreateTab("Settings", 4483362458) -- Title, Image
-local ThirdSection = ThirdTab:CreateSection("Settings")
-
-local Button = Tab:CreateButton({
-   Name = "Discord Server",
-   Callback = function()
-   local copy = "https://discord.gg/GPn7rgknhC" script.parent.MouseButton1Click:Connect(function(plr) setclipboard(tostring(copy)) end)
-   end,
-})
-
