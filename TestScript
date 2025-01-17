@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Roblox Script Hub(W.I.P)",
+   Name = "Roblox Script Hub(W.I.P) Join To Our Discord Server = discord.gg/gTP4egtf",
    Icon = 0,
    LoadingTitle = "Roblox HUB SCRIPT",
    LoadingSubtitle = "by John Gaming", 
@@ -146,4 +146,3 @@ local JumpPowerSlider = MainTab:CreateSlider({
 
 local SecondTab = Window:CreateTab("Second Tab, Pc Version", 4483362458)
 local SecondSection = SecondTab:CreateSection("Pc Section")
-local SecondSection = SecondTab:CreateSection("Hello User If You Want To Buy The PREMIUM ONE Please Kindly Join To Our Discord Server = discord.gg/gTP4egtf")
