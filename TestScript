@@ -159,7 +159,7 @@ local ThirdTab = Window:CreateTab("Settings", 4483362458)
 local ThirdSection = ThirdTab:CreateSection("Settings")
 
 
-Tab:CreateButton({
+local DiscordServerTab = ThirdTab:CreateButton({
     Name = "Discord Server",
     Callback = function()
         if setclipboard then
