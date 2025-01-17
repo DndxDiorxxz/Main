@@ -146,7 +146,7 @@ local JumpPowerSlider = MainTab:CreateSlider({
 
 local SecondTab = Window:CreateTab("Second Tab, Pc Version", 4483362458)
 local SecondSection = SecondTab:CreateSection("Pc Section")
-local SecondSection = SecondTab:CreateSection("TAKE NOTE IF YOU WANT TO BUY THE PREMIUM SCRIPT PLEASE JOIN TO OUR SERVER (discord.gg/gTP4egtf)")
+local SecondParagraph = SecondTab:CreateParagraph({Title = "Want The PREMIUM ONE?", Content = "Please Join to our discord server = discord.gg/gTP4egtf"})
 
 
 
