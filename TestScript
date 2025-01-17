@@ -34,7 +34,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 local MainTab = Window:CreateTab("Home", 4483362458)
-local MainSection = MainTab:CreateSection("Mobile Section")
+local MainSection = MainTab:CreateSection("Mobile Script Section")
 
 Rayfield:Notify({
    Title = "You executed the PREMUIM script",
@@ -80,7 +80,7 @@ local Button = MainTab:CreateButton({
 
 -- CAMLOCK SCRIPT Button
 local CamlockButton = MainTab:CreateButton({
-   Name = "CAMLOCK SCRIPT",
+   Name = "CAMLOCK SCRIPT(ONLY MOBILE)",
    Callback = function()
        loadstring(game:HttpGet("https://raw.githubusercontent.com/brosula123/CAMLOCK/main/SKIBIDI"))()
    end,
@@ -149,7 +149,7 @@ local SecondSection = SecondTab:CreateSection("Pc Section")
 
 
 local AimbotButton = SecondTab:CreateButton({
-   Name = "Aimbot ONLY FOR PC",
+   Name = "Aimbot(ONLY FOR PC)",
    Callback = function()
        loadstring(game:HttpGet("https://raw.githubusercontent.com/DndxDiorxxz/Main/refs/heads/main/dsds"))()
    end,
