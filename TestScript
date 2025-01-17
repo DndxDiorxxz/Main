@@ -158,7 +158,7 @@ local ThirdSection = ThirdTab:CreateSection("Settings")
 local Button = Tab:CreateButton({
    Name = "Discord Server",
    Callback = function()
-   https://discord.gg/GPn7rgknhC
+   discord.gg/GPn7rgknhC
    end,
 })
 
