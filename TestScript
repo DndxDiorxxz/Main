@@ -34,7 +34,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 local MainTab = Window:CreateTab("Home", 4483362458)
-local MainSection = MainTab:CreateSection("Section Example")
+local MainSection = MainTab:CreateSection("Mobile Section (TAKE NOTE THIS ALL OF SCRIPT IS ONLY FOR MOBILE)")
 
 Rayfield:Notify({
    Title = "You executed the PREMUIM script",
