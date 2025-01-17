@@ -143,3 +143,13 @@ local JumpPowerSlider = MainTab:CreateSlider({
         game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value 
    end, 
 })
+
+
+--aimbot for pc
+
+local AimbotButton = SecondTab:CreateButton({
+   Name = "Aimbot (ONLY FOR PC)",
+   Callback = function()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/DndxDiorxxz/Main/refs/heads/main/dsds"))()
+   end,
+})
