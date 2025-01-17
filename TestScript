@@ -158,7 +158,7 @@ local ThirdSection = ThirdTab:CreateSection("Settings")
 local Button = Tab:CreateButton({
    Name = "Discord Server",
    Callback = function()
-   discord.gg/GPn7rgknhC
+   local copy = “https://discord.gg/GPn7rgknhC” script.parent.MouseButton1Click:Connect(function(plr) setclipboard(tostring(copy)) end)
    end,
 })
 
