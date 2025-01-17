@@ -159,3 +159,24 @@ local ThirdTab = Window:CreateTab("Settings", 4483362458)
 local ThirdSection = ThirdTab:CreateSection("Settings")
 
 
+Tab:CreateButton({
+    Name = "Discord Server",
+    Callback = function()
+        if setclipboard then
+            setclipboard("https://discord.gg/4YmrNfU8B8") -- Discord link to copy
+            Rayfield:Notify({
+                Title = "Success",
+                Content = "Discord link copied to clipboard!",
+                Duration = 3
+            })
+        else
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "Clipboard functionality not supported in this executor!",
+                Duration = 3
+            })
+        end
+    end
+})
+
+
