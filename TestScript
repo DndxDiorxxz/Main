@@ -148,9 +148,4 @@ local SecondTab = Window:CreateTab("Second Tab, Pc Version", 4483362458)
 local SecondSection = SecondTab:CreateSection("Pc Section")
 
 
-local AimbotButton = SecondTab:CreateButton({
-   Name = "Aimbot (ONLY FOR PC)",
-   Callback = function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/DndxDiorxxz/Main/refs/heads/main/dsds"))()
-   end,
-})
+local Label = Tab:CreateLabel("if you want to buy the PREMIUM ONE PLEASE JOIN TO OUR DISCORD SERVER (discord.gg/gTP4egtf)", 4483362458, Color3.fromRGB(255, 255, 255), false) -- Title, Icon, Color, IgnoreTheme
