@@ -146,6 +146,3 @@ local JumpPowerSlider = MainTab:CreateSlider({
 
 local SecondTab = Window:CreateTab("Second Tab, Pc Version", 4483362458)
 local SecondSection = SecondTab:CreateSection("Pc Section")
-
-
-
