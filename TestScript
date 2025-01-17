@@ -157,16 +157,3 @@ local AimbotButton = SecondTab:CreateButton({
 
 local ThirdTab = Window:CreateTab("Settings", 4483362458)
 local ThirdSection = ThirdTab:CreateSection("Settings")
-
-Tab:CreateButton({
-    Name = "Discord Server",
-    Callback = function()
-        "https://discord.gg/4YmrNfU8B8"
-        setclipboard("https://discord.gg/4YmrNfU8B8")
-        Rayfield:Notify({
-            Title = "Success",
-            Content = "Text copied to clipboard!",
-            Duration = 3
-        })
-    end
-})
