@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Roblox Script Hub(W.I.P) Join To Our Discord Server = discord.gg/gTP4egtf",
+   Name = "Roblox Script Hub(W.I.P)",
    Icon = 0,
    LoadingTitle = "Roblox HUB SCRIPT",
    LoadingSubtitle = "by John Gaming", 
@@ -17,7 +17,7 @@ local Window = Rayfield:CreateWindow({
 
    Discord = {
       Enabled = true,
-      Invite = "gTP4egtf",
+      Invite = "GPn7rgknhC",
       RememberJoins = true
    },
 
@@ -146,3 +146,19 @@ local JumpPowerSlider = MainTab:CreateSlider({
 
 local SecondTab = Window:CreateTab("Second Tab, Pc Version", 4483362458)
 local SecondSection = SecondTab:CreateSection("Pc Section")
+
+
+
+
+
+
+local ThirdTab = Window:CreateTab("Settings", 4483362458) -- Title, Image
+local ThirdSection = ThirdTab:CreateSection("Settings")
+
+local Button = Tab:CreateButton({
+   Name = "Discord Server",
+   Callback = function()
+   https://discord.gg/GPn7rgknhC
+   end,
+})
+
