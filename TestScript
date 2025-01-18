@@ -17,7 +17,7 @@ local Window = Rayfield:CreateWindow({
 
    Discord = {
       Enabled = true,
-      Invite = "gTP4egtf",
+      Invite = "GPn7rgknhC",
       RememberJoins = false
    },
 
@@ -155,13 +155,13 @@ local Button = SecondTab:CreateButton({
 })
 
 local ThirdTab = Window:CreateTab("Settings", 4483362458) -- Title, Image
-local ThirdSection = ThirdTab:CreaterSection("Settings")
+local ThirdSection = ThirdTab:CreateSection("Settings")
 
 local DiscordServerTab = ThirdTab:CreateButton({
     Name = "Discord Server",
     Callback = function()
         if setclipboard then
-            setclipboard("https://discord.gg/4YmrNfU8B8") -- Discord link to copy
+            setclipboard("https://discord.gg/GPn7rgknhC") -- Discord link to copy
             Rayfield:Notify({
                 Title = "Success",
                 Content = "Discord link copied to clipboard!",
