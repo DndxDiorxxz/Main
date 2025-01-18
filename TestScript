@@ -149,10 +149,9 @@ local SecondSection = SecondTab:CreateSection("PC VERSION ONLY")
 
 -- AIMBOT FOR PC
 local AimbotButton = SecondTab:CreateButton({
-   Name = "Aimbot (ONLY FOR PC)",
+   Name = "Aimbot (ONLY FOR PC)(PREMIUM)",
    Callback = function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/DndxDiorxxz/Main/refs/heads/main/dsds"))()
-   end,
+      
 })
 
 local ThirdTab = Window:CreateTab("Settings", 4483362458)
