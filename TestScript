@@ -157,7 +157,7 @@ local SecondSection = SecondTab:CreateSection("PC VERSION ONLY")
 local AimbotButton = SecondTab:CreateButton({
    Name = "Aimbot (ONLY FOR PC, PREMIUM)",
    Callback = function()
-       print("Aimbot activated (only for PC).")
+       -- Hallooo
    end,
 })
 
