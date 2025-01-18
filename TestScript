@@ -37,7 +37,7 @@ local MainTab = Window:CreateTab("Home", 4483362458)
 local MainSection = MainTab:CreateSection("Section Example")
 
 Rayfield:Notify({
-   Title = "You executed the PREMUIM script",
+   Title = "You executed the FREE script",
    Content = "Enjoy",
    Duration = 5,
    Image = 13047715178,
