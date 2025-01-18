@@ -1,9 +1,9 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Premium Script Hub (W.I.P)",
-   Icon = "rbxassetid://1234567890", -- Replace with a valid image asset ID
-   LoadingTitle = "PREMIUM HUB SCRIPT",
+   Name = "Roblox Script Hub(W.I.P)",
+   Icon = 0,
+   LoadingTitle = "ROBLOX HUB SCRIPT",
    LoadingSubtitle = "by John Gaming", 
    Theme = "Space",
    DisableRayfieldPrompts = false,
@@ -17,27 +17,27 @@ local Window = Rayfield:CreateWindow({
 
    Discord = {
       Enabled = true,
-      Invite = "4YmrNfU8B8",
+      Invite = "gTP4egtf",
       RememberJoins = false
    },
 
    KeySystem = true,
    KeySettings = {
       Title = "Key System",
-      Subtitle = "Premium Hub Key System",
-      Note = "Get Key here https://pastebin.com/BGqxSyDf",
+      Subtitle = "Roblox Hub Key System",
+      Note = "Get Key here https://pastebin.com/8GYyUtaa",
       FileName = "Key",
       SaveKey = false,
       GrabKeyFromSite = true,
-      Key = {"https://pastebin.com/raw/BGqxSyDf"}
+      Key = {"https://pastebin.com/raw/8GYyUtaa"}
    }
 })
 
 local MainTab = Window:CreateTab("Home", 4483362458)
-local MainSection = MainTab:CreateSection("Mobile Section (TAKE NOTE THIS SCRIPT IS ONLY FOR MOBILE)")
+local MainSection = MainTab:CreateSection("Section Example")
 
 Rayfield:Notify({
-   Title = "You executed the PREMIUM script",
+   Title = "You executed the PREMUIM script",
    Content = "Enjoy",
    Duration = 5,
    Image = 13047715178,
@@ -59,15 +59,15 @@ local Button = MainTab:CreateButton({
 
        if _G.infinJumpStarted == nil then
            _G.infinJumpStarted = true
-
+           
            game.StarterGui:SetCore("SendNotification", {Title="Youtube Hub"; Text="Infinite Jump Activated!"; Duration=5;})
 
            local plr = game:GetService('Players').LocalPlayer
            local m = plr:GetMouse()
-           m.KeyDown:Connect(function(k)
-               if _G.infinjump and k:byte() == 32 then
-                   local humanoid = plr.Character and plr.Character:FindFirstChildOfClass('Humanoid')
-                   if humanoid then
+           m.KeyDown:connect(function(k)
+               if _G.infinjump then
+                   if k:byte() == 32 then
+                       humanoid = game:GetService'Players'.LocalPlayer.Character:FindFirstChildOfClass('Humanoid')
                        humanoid:ChangeState('Jumping')
                        wait()
                        humanoid:ChangeState('Seated')
@@ -115,7 +115,7 @@ local PetsgoButton = MainTab:CreateButton({
    Name = "PETS GO SCRIPT",
    Callback = function()
        loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))()
-   end,
+   end
 })
 
 -- WalkSpeed Slider
@@ -127,10 +127,7 @@ local WalkSpeedSlider = MainTab:CreateSlider({
    CurrentValue = 16,
    Flag = "sliderws",
    Callback = function(Value)
-        local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = Value
-        end
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
    end,
 })
 
@@ -139,30 +136,26 @@ local JumpPowerSlider = MainTab:CreateSlider({
    Name = "JumpPower Slider",
    Range = {1, 350},
    Increment = 1,
-   Suffix = "Power",
-   CurrentValue = 50, 
+   Suffix = "Speed",
+   CurrentValue = 16, 
    Flag = "sliderjp", 
    Callback = function(Value) 
-        local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.JumpPower = Value
-        end
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value 
    end, 
 })
 
-local SecondTab = Window:CreateTab("PC VERSION", 4483362458)
+local SecondTab = Window:CreateTab("Script For PC", 4483362458) -- Title, Image
 local SecondSection = SecondTab:CreateSection("PC VERSION ONLY")
 
--- AIMBOT FOR PC
-local AimbotButton = SecondTab:CreateButton({
-   Name = "Aimbot (ONLY FOR PC, PREMIUM)",
+local Button = SecondTab:CreateButton({
+   Name = "Aimbot FOR ONLY PC",
    Callback = function()
-       -- Hallooo
+   print("THIS FEATURES CANT USE BECAUSE YOUR USING FREE HUB, IF YOU WANT TO BUY THE PREMIUM ONE PLEASE JOIN TO OUR DISCORD SERVER, CLICK THE SETTINGS TAB")
    end,
 })
 
-local ThirdTab = Window:CreateTab("Settings", 4483362458)
-local ThirdSection = ThirdTab:CreateSection("Settings")
+local ThirdTab = Window:CreateTab("Settings", 4483362458) -- Title, Image
+local ThirdSection = ThirdTab:CreaterSection("Settings")
 
 local DiscordServerTab = ThirdTab:CreateButton({
     Name = "Discord Server",
