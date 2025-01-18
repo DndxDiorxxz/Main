@@ -147,6 +147,13 @@ local JumpPowerSlider = MainTab:CreateSlider({
 local SecondTab = Window:CreateTab("PC VERSION", 4483362458)
 local SecondSection = SecondTab:CreateSection("PC VERSION ONLY")
 
+-- AIMBOT FOR PC
+local AimbotButton = SecondTab:CreateButton({
+   Name = "Aimbot (ONLY FOR PC, PREMIUM)",
+   Callback = function()
+  -- ONLY FOR PREMIUM   
+})
+
 
 local ThirdTab = Window:CreateTab("Settings", 4483362458)
 local ThirdSection = ThirdTab:CreateSection("Settings")
