@@ -118,14 +118,6 @@ local PetsgoButton = MainTab:CreateButton({
    end
 })
 
--- FRUIT FINDER SCRIPT FOR BLOXFRUIT BUTTON
-local FruitfinderButton = MainTab:CreateButton({
-    Name = "FRUIT FINDER - BLOXFRUIT",
-    Callback = function()
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/BloxFruit/FindFruit.lua'))()
-    end
-})
-
 -- WalkSpeed Slider
 local WalkSpeedSlider = MainTab:CreateSlider({
    Name = "WalkSpeed Slider",
