@@ -120,12 +120,17 @@ local PetsgoButton = MainTab:CreateButton({
 
 -- FRUIT FINDER SCRIPT FOR BLOXFRUIT BUTTON
 local FruitfinderButton = MainTab:CreateButton({
-   Name = "FRUIT FINDER - BLOXFRUIT",
-   Callback = function()
-       _G.Webhook = ""
-_G.MetodeTeleport = "Tween" --"Tween" or "Instant"
-loadstring(game:HttpGet(('https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/BloxFruit/FindFruit.lua')))()
-   end
+    Name = "FRUIT FINDER - BLOXFRUIT",
+    Callback = function()
+        -- Set the webhook URL (leave blank if not using a webhook)
+        _G.Webhook = "" 
+
+        -- Choose the teleportation method: "Tween" (smooth) or "Instant" (immediate)
+        _G.MetodeTeleport = "Tween" 
+
+        -- Load the Fruit Finder script
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/ThundarZ/Welcome/refs/heads/main/Main/BloxFruit/FindFruit.lua'))()
+    end
 })
 
 -- WalkSpeed Slider
