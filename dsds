@@ -1,3 +1,5 @@
+--AIMBOT FOR PC
+
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
@@ -65,3 +67,54 @@ RunService.RenderStepped:Connect(function()
         lockCamera()
     end
 end)
+
+__ UNIVERSAL ESP
+
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Function to create ESP for a player's character
+local function createESP(character)
+    if not character then return end
+
+    -- Check if ESP already exists
+    if character:FindFirstChild("ESP_Highlight") then return end
+
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "ESP_Highlight"
+    highlight.Parent = character
+    highlight.FillColor = Color3.fromRGB(255, 0, 0) -- Red color
+    highlight.FillTransparency = 0.5
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255) -- White outline
+    highlight.OutlineTransparency = 0
+
+    -- Remove ESP when character is removed (e.g., player dies)
+    character.Destroying:Connect(function()
+        highlight:Destroy()
+    end)
+end
+
+-- Function to apply ESP to a player
+local function applyESP(player)
+    if player == LocalPlayer then return end -- Ignore local player
+
+    -- Apply ESP when character is added
+    player.CharacterAdded:Connect(function(character)
+        task.wait(0.5) -- Small delay to ensure the character loads
+        createESP(character)
+    end)
+
+    -- If the player already has a character, apply ESP immediately
+    if player.Character then
+        createESP(player.Character)
+    end
+end
+
+-- Apply ESP to all existing and new players
+for _, player in ipairs(Players:GetPlayers()) do
+    applyESP(player)
+end
+
+Players.PlayerAdded:Connect(applyESP) -- Detect new players joining
+
