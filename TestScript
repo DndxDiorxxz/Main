@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Premuim Script Hub(W.I.P)",
+   Name = "Premium Script Hub(W.I.P)",
    Icon = 0,
    LoadingTitle = "ROBLOX HUB SCRIPT",
    LoadingSubtitle = "by John Gaming", 
@@ -24,7 +24,7 @@ local Window = Rayfield:CreateWindow({
    KeySystem = true,
    KeySettings = {
       Title = "Key System",
-      Subtitle = "Premuim Hub Key System",
+      Subtitle = "Premium Hub Key System",
       Note = "Get Key here https://pastebin.com/BGqxSyDf",
       FileName = "Key",
       SaveKey = false,
@@ -37,7 +37,7 @@ local MainTab = Window:CreateTab("Home", 4483362458)
 local MainSection = MainTab:CreateSection("Section Example")
 
 Rayfield:Notify({
-   Title = "You executed the FREE script",
+   Title = "You executed the PREMIUM script",
    Content = "Enjoy",
    Duration = 5,
    Image = 13047715178,
