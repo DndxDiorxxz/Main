@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Premium Script Hub(W.I.P)",
+   Name = "Test Script Hub(W.I.P)",
    Icon = 0,
    LoadingTitle = "ROBLOX HUB SCRIPT",
    LoadingSubtitle = "by John Gaming", 
