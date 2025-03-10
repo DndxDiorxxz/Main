@@ -50,7 +50,7 @@ Environment.FOVSettings = {
 	LockedColor = Color3.fromRGB(255, 70, 70),
 	Transparency = 0.5,
 	Sides = 60,
-	Thickness = 1,
+	Thickness = 3,
 	Filled = false
 }
 
@@ -239,7 +239,7 @@ function Environment.Functions:ResetSettings()
 		LockedColor = Color3.fromRGB(255, 70, 70),
 		Transparency = 0.5,
 		Sides = 60,
-		Thickness = 1,
+		Thickness = 3,
 		Filled = false
 	}
 end
