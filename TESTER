@@ -234,7 +234,7 @@ function Environment.Functions:ResetSettings()
 	Environment.FOVSettings = {
 		Enabled = true,
 		Visible = true,
-		Amount = 90,
+		Amount = 100,
 		Color = Color3.fromRGB(255, 255, 255),
 		LockedColor = Color3.fromRGB(255, 70, 70),
 		Transparency = 0.5,
