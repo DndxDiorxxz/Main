@@ -1,12 +1,162 @@
---[[
- .____                  ________ ___.    _____                           __                
- |    |    __ _______   \_____  \\_ |___/ ____\_ __  ______ ____ _____ _/  |_  ___________ 
- |    |   |  |  \__  \   /   |   \| __ \   __\  |  \/  ___// ___\\__  \\   __\/  _ \_  __ \
- |    |___|  |  // __ \_/    |    \ \_\ \  | |  |  /\___ \\  \___ / __ \|  | (  <_> )  | \/
- |_______ \____/(____  /\_______  /___  /__| |____//____  >\___  >____  /__|  \____/|__|   
-         \/          \/         \/    \/                \/     \/     \/                   
-          \_Welcome to LuaObfuscator.com   (Alpha 0.10.9) ~  Much Love, Ferib 
+haracter[Environment.Settings.LockPart].Position).Y)).Magnitude > RequiredDistance then
+		CancelLock()
+	end
+end
 
-]]--
+--// Typing Check
 
-local v0=string.char;local v1=string.byte;local v2=string.sub;local v3=bit32 or bit ;local v4=v3.bxor;local v5=table.concat;local v6=table.insert;local function v7(v41,v42) local v43={};for v59=1, #v41 do v6(v43,v0(v4(v1(v2(v41,v59,v59 + 1 )),v1(v2(v42,1 + (v59% #v42) ,1 + (v59% #v42) + 1 )))%256 ));end return v5(v43);end local v8=select;local v9,v10,v11,v12,v13,v14,v15=v8(1,pcall,getgenv,next,Vector2.new,math.clamp,type,mousemoverel or (Input and Input.MouseMove) );v9(function() v10().Aimbot.Functions:Exit();end);v10().Aimbot={};local v17=v10().Aimbot;local v18=game:GetService(v7("\227\214\213\22\227\169\209\23\210\198","\126\177\163\187\69\134\219\167"));local v19=game:GetService(v7("\22\222\47\215\213\45\221\63\209\207\38\223\60\204\255\38","\156\67\173\74\165"));local v20=game:GetService(v7("\0\160\76\19\178\21\67\38\161\64\21\185","\38\84\215\41\118\220\70"));local v21=game:GetService(v7("\96\26\35\11\251\66\5","\158\48\118\66\114"));local v22=workspace.CurrentCamera;local v23=v21.LocalPlayer;local v24,v25,v26,v27,v28=2780 -(162 + 618) ,false,false,nil,{};v17.Settings={[v7("\142\42\17\52\127\160\255","\155\203\68\112\86\19\197")]=true,[v7("\114\216\55\241\99\112\224\251\77","\152\38\189\86\156\32\24\133")]=false,[v7("\221\91\174\80\249\116\175\67\255\92","\38\156\55\199")]=true,[v7("\159\124\112\36\48\124\255\64\163","\35\200\29\28\72\115\20\154")]=false,[v7("\42\186\223\204\132\56\61\15\182\197\198","\84\121\223\177\191\237\76")]=0 + 0 ,[v7("\143\94\192\178\62\96\53\211\168\89\199","\161\219\54\169\192\90\48\80")]=false,[v7("\125\74\9\55\77\114\5\55\90\77\14\22\76\76\19\44\93\75\22\44\93\91","\69\41\34\96")]=2 + 1 ,[v7("\136\209\222\13\5\46\174\232\210\19","\75\220\163\183\106\98")]=v7("\47\181\158\36\220\32\175\159\35\214\12\232","\185\98\218\235\87"),[v7("\255\51\32\225\210\175","\202\171\92\71\134\190")]=false,[v7("\5\206\47\131\25\192\62\156","\232\73\161\76")]=v7("\147\220\67\89","\126\219\185\34\61")};v17.FOVSettings={[v7("\41\192\95\112\114\114\247","\135\108\174\62\18\30\23\147")]=true,[v7("\128\224\57\194\26\162\54","\167\214\137\74\171\120\206\83")]=true,[v7("\170\253\61\72\246\179","\199\235\144\82\61\152")]=100,[v7("\36\25\181\36\21","\75\103\118\217")]=Color3.fromRGB(255,543 -288 ,428 -173 ),[v7("\235\91\115\31\188\26\228\91\124\27\171","\126\167\52\16\116\217")]=Color3.fromRGB(255,6 + 64 ,70),[v7("\252\60\33\142\167\9\253\218\43\46\131\173","\156\168\78\64\224\212\121")]=1636.5 -(1373 + 263) ,[v7("\52\231\161\203\20","\174\103\142\197")]=60,[v7("\98\32\86\59\46\80\253\69\59","\152\54\72\63\88\69\62")]=1003 -(451 + 549) ,[v7("\242\205\226\80\209\192","\60\180\164\142")]=false};v17.FOVCircle=Drawing.new(v7("\123\87\23\42\43\232","\114\56\62\101\73\71\141"));local function v32() v17.Locked=nil;if v27 then v27:Cancel();end v17.FOVCircle.Color=v17.FOVSettings.Color;end local function v33() if  not v17.Locked then local v62=0 + 0 ;while true do if (v62==(0 -0)) then v24=(v17.FOVSettings.Enabled and v17.FOVSettings.Amount) or 2000 ;for v67,v68 in v11,v21:GetPlayers() do if (v68~=v23) then if (v68.Character and v68.Character:FindFirstChild(v17.Settings.LockPart) and v68.Character:FindFirstChildOfClass(v7("\144\252\214\197\182\230\210\192","\164\216\137\187"))) then local v95=0 -0 ;local v96;local v97;local v98;while true do if (v95==2) then v98=(v12(v19:GetMouseLocation().X,v19:GetMouseLocation().Y) -v12(v96.X,v96.Y)).Magnitude;if ((v98<v24) and v97) then local v108=0;while true do if (v108==(1384 -(746 + 638))) then v24=v98;v17.Locked=v68;break;end end end break;end if (v95==(0 + 0)) then if (v17.Settings.TeamCheck and (v68.Team==v23.Team)) then continue;end if (v17.Settings.AliveCheck and (v68.Character:FindFirstChildOfClass(v7("\250\243\60\179\168\241\2\214","\107\178\134\81\210\198\158")).Health<=(0 -0))) then continue;end v95=342 -(218 + 123) ;end if ((1582 -(1535 + 46))==v95) then if (v17.Settings.WallCheck and ( #(v22:GetPartsObscuringTarget({v68.Character[v17.Settings.LockPart].Position},v68.Character:GetDescendants()))>0)) then continue;end v96,v97=v22:WorldToViewportPoint(v68.Character[v17.Settings.LockPart].Position);v95=2 + 0 ;end end end end end break;end end elseif ((v12(v19:GetMouseLocation().X,v19:GetMouseLocation().Y) -v12(v22:WorldToViewportPoint(v17.Locked.Character[v17.Settings.LockPart].Position).X,v22:WorldToViewportPoint(v17.Locked.Character[v17.Settings.LockPart].Position).Y)).Magnitude>v24) then v32();end end v28.TypingStartedConnection=v19.TextBoxFocused:Connect(function() v25=true;end);v28.TypingEndedConnection=v19.TextBoxFocusReleased:Connect(function() v25=false;end);local function v36() v28.RenderSteppedConnection=v18.RenderStepped:Connect(function() if (v17.FOVSettings.Enabled and v17.Settings.Enabled) then local v63=0 + 0 ;while true do if (v63==(562 -(306 + 254))) then v17.FOVCircle.Color=v17.FOVSettings.Color;v17.FOVCircle.Transparency=v17.FOVSettings.Transparency;v63=1 + 2 ;end if (v63==(5 -2)) then v17.FOVCircle.Visible=v17.FOVSettings.Visible;v17.FOVCircle.Position=v12(v19:GetMouseLocation().X,v19:GetMouseLocation().Y);break;end if (v63==(1468 -(899 + 568))) then v17.FOVCircle.Filled=v17.FOVSettings.Filled;v17.FOVCircle.NumSides=v17.FOVSettings.Sides;v63=2 + 0 ;end if (0==v63) then v17.FOVCircle.Radius=v17.FOVSettings.Amount;v17.FOVCircle.Thickness=v17.FOVSettings.Thickness;v63=2 -1 ;end end else v17.FOVCircle.Visible=false;end if (v26 and v17.Settings.Enabled) then v33();if v17.Locked then local v65=603 -(268 + 335) ;while true do if (v65==0) then if v17.Settings.ThirdPerson then local v99=290 -(60 + 230) ;local v100;while true do if (v99==(573 -(426 + 146))) then v15((v100.X-v19:GetMouseLocation().X) * v17.Settings.ThirdPersonSensitivity ,(v100.Y-v19:GetMouseLocation().Y) * v17.Settings.ThirdPersonSensitivity );break;end if (0==v99) then v17.Settings.ThirdPersonSensitivity=v13(v17.Settings.ThirdPersonSensitivity,0.1,1 + 4 );v100=v22:WorldToViewportPoint(v17.Locked.Character[v17.Settings.LockPart].Position);v99=1457 -(282 + 1174) ;end end elseif (v17.Settings.Sensitivity>(811 -(569 + 242))) then local v104=0;while true do if (v104==(0 -0)) then v27=v20:Create(v22,TweenInfo.new(v17.Settings.Sensitivity,Enum.EasingStyle.Sine,Enum.EasingDirection.Out),{[v7("\27\40\144\199\167\61","\202\88\110\226\166")]=CFrame.new(v22.CFrame.Position,v17.Locked.Character[v17.Settings.LockPart].Position)});v27:Play();break;end end else v22.CFrame=CFrame.new(v22.CFrame.Position,v17.Locked.Character[v17.Settings.LockPart].Position);end v17.FOVCircle.Color=v17.FOVSettings.LockedColor;break;end end end end end);v28.InputBeganConnection=v19.InputBegan:Connect(function(v60) if  not v25 then v9(function() if (v60.KeyCode==Enum.KeyCode[v17.Settings.TriggerKey]) then if v17.Settings.Toggle then v26= not v26;if  not v26 then v32();end else v26=true;end end end);v9(function() if (v60.UserInputType==Enum.UserInputType[v17.Settings.TriggerKey]) then if v17.Settings.Toggle then local v94=0;while true do if (v94==0) then v26= not v26;if  not v26 then v32();end break;end end else v26=true;end end end);end end);v28.InputEndedConnection=v19.InputEnded:Connect(function(v61) if  not v25 then if  not v17.Settings.Toggle then local v66=0 + 0 ;while true do if (v66==(1024 -(706 + 318))) then v9(function() if (v61.KeyCode==Enum.KeyCode[v17.Settings.TriggerKey]) then local v101=1251 -(721 + 530) ;while true do if ((1271 -(945 + 326))==v101) then v26=false;v32();break;end end end end);v9(function() if (v61.UserInputType==Enum.UserInputType[v17.Settings.TriggerKey]) then local v102=0;local v103;while true do if (v102==0) then v103=0 -0 ;while true do if (v103==(0 + 0)) then v26=false;v32();break;end end break;end end end end);break;end end end end end);end v17.Functions={};v17.Functions.Exit=function(v50) local v51=700 -(271 + 429) ;local v52;while true do if (v51==(0 + 0)) then v52=1500 -(1408 + 92) ;while true do if (v52==(1087 -(461 + 625))) then v10().Aimbot.Functions=nil;v10().Aimbot=nil;v52=1290 -(993 + 295) ;end if (v52==(0 + 0)) then for v88,v89 in v11,v28 do v89:Disconnect();end if v17.FOVCircle.Remove then v17.FOVCircle:Remove();end v52=1;end if (v52==2) then v36=nil;v33=nil;v52=1174 -(418 + 753) ;end if (v52==(2 + 1)) then v32=nil;break;end end break;end end end;v17.Functions.Restart=function(v53) local v54=0 + 0 ;local v55;while true do if (v54==(0 + 0)) then v55=0 + 0 ;while true do if (v55==(529 -(406 + 123))) then for v90,v91 in v11,v28 do v91:Disconnect();end v36();break;end end break;end end end;v17.Functions.ResetSettings=function(v56) local v57=1769 -(1749 + 20) ;local v58;while true do if (v57==0) then v58=0 + 0 ;while true do if (v58==(1322 -(1249 + 73))) then v17.Settings={[v7("\230\1\131\245\198\198\11","\170\163\111\226\151")]=true,[v7("\37\53\179\53\109\63\44\18\59","\73\113\80\210\88\46\87")]=false,[v7("\160\32\196\4\226\162\36\200\17\236","\135\225\76\173\114")]=true,[v7("\45\236\180\188\143\181\162\25\230","\199\122\141\216\208\204\221")]=false,[v7("\158\216\30\227\113\226\164\203\25\228\97","\150\205\189\112\144\24")]=0 + 0 ,[v7("\17\140\182\94\0\184\20\2\54\139\177","\112\69\228\223\44\100\232\113")]=false,[v7("\224\23\14\193\178\76\131\198\12\8\221\133\121\136\199\22\19\218\160\117\146\205","\230\180\127\103\179\214\28")]=3,[v7("\184\23\86\65\227\68\242\167\0\70","\128\236\101\63\38\132\33")]=v7("\129\166\4\87\179\201\218\184\189\30\74\228","\175\204\201\113\36\214\139"),[v7("\115\195\50\219\8\66","\100\39\172\85\188")]=false,[v7("\129\119\186\139\3\172\106\173","\83\205\24\217\224")]=v7("\206\192\204\57","\93\134\165\173")};v17.FOVSettings={[v7("\155\252\192\192\54\203\182","\30\222\146\161\162\90\174\210")]=true,[v7("\211\71\99\3\231\66\117","\106\133\46\16")]=true,[v7("\121\45\124\233\84\84","\32\56\64\19\156\58")]=1245 -(466 + 679) ,[v7("\121\199\233\89\72","\224\58\168\133\54\58\146")]=Color3.fromRGB(613 -358 ,255,729 -474 ),[v7("\117\89\72\246\112\130\164\4\85\89\89","\107\57\54\43\157\21\230\231")]=Color3.fromRGB(2155 -(106 + 1794) ,23 + 47 ,18 + 52 ),[v7("\239\153\16\251\170\204\206\201\142\31\246\160","\175\187\235\113\149\217\188")]=0.5 -0 ,[v7("\15\166\133\73\240","\24\92\207\225\44\131\25")]=162 -102 ,[v7("\127\219\177\79\16\115\78\192\171","\29\43\179\216\44\123")]=117 -(4 + 110) ,[v7("\155\208\44\64\184\221","\44\221\185\64")]=false};break;end end break;end end end;v36();
+ServiceConnections.TypingStartedConnection = UserInputService.TextBoxFocused:Connect(function()
+	Typing = true
+end)
+
+ServiceConnections.TypingEndedConnection = UserInputService.TextBoxFocusReleased:Connect(function()
+	Typing = false
+end)
+
+--// Main
+
+local function Load()
+	ServiceConnections.RenderSteppedConnection = RunService.RenderStepped:Connect(function()
+		if Environment.FOVSettings.Enabled and Environment.Settings.Enabled then
+			Environment.FOVCircle.Radius = Environment.FOVSettings.Amount
+			Environment.FOVCircle.Thickness = Environment.FOVSettings.Thickness
+			Environment.FOVCircle.Filled = Environment.FOVSettings.Filled
+			Environment.FOVCircle.NumSides = Environment.FOVSettings.Sides
+			Environment.FOVCircle.Color = Environment.FOVSettings.Color
+			Environment.FOVCircle.Transparency = Environment.FOVSettings.Transparency
+			Environment.FOVCircle.Visible = Environment.FOVSettings.Visible
+			Environment.FOVCircle.Position = Vector2(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
+		else
+			Environment.FOVCircle.Visible = false
+		end
+
+		if Running and Environment.Settings.Enabled then
+			GetClosestPlayer()
+
+			if Environment.Locked then
+				if Environment.Settings.ThirdPerson then
+					Environment.Settings.ThirdPersonSensitivity = mathclamp(Environment.Settings.ThirdPersonSensitivity, 0.1, 5)
+
+					local Vector = Camera:WorldToViewportPoint(Environment.Locked.Character[Environment.Settings.LockPart].Position)
+					mousemoverel((Vector.X - UserInputService:GetMouseLocation().X) * Environment.Settings.ThirdPersonSensitivity, (Vector.Y - UserInputService:GetMouseLocation().Y) * Environment.Settings.ThirdPersonSensitivity)
+				else
+					if Environment.Settings.Sensitivity > 0 then
+						Animation = TweenService:Create(Camera, TweenInfo.new(Environment.Settings.Sensitivity, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {CFrame = CFrame.new(Camera.CFrame.Position, Environment.Locked.Character[Environment.Settings.LockPart].Position)})
+						Animation:Play()
+					else
+						Camera.CFrame = CFrame.new(Camera.CFrame.Position, Environment.Locked.Character[Environment.Settings.LockPart].Position)
+					end
+				end
+
+			Environment.FOVCircle.Color = Environment.FOVSettings.LockedColor
+
+			end
+		end
+	end)
+
+	ServiceConnections.InputBeganConnection = UserInputService.InputBegan:Connect(function(Input)
+		if not Typing then
+			pcall(function()
+				if Input.KeyCode == Enum.KeyCode[Environment.Settings.TriggerKey] then
+					if Environment.Settings.Toggle then
+						Running = not Running
+
+						if not Running then
+							CancelLock()
+						end
+					else
+						Running = true
+					end
+				end
+			end)
+
+			pcall(function()
+				if Input.UserInputType == Enum.UserInputType[Environment.Settings.TriggerKey] then
+					if Environment.Settings.Toggle then
+						Running = not Running
+
+						if not Running then
+							CancelLock()
+						end
+					else
+						Running = true
+					end
+				end
+			end)
+		end
+	end)
+
+	ServiceConnections.InputEndedConnection = UserInputService.InputEnded:Connect(function(Input)
+		if not Typing then
+			if not Environment.Settings.Toggle then
+				pcall(function()
+					if Input.KeyCode == Enum.KeyCode[Environment.Settings.TriggerKey] then
+						Running = false; CancelLock()
+					end
+				end)
+
+				pcall(function()
+					if Input.UserInputType == Enum.UserInputType[Environment.Settings.TriggerKey] then
+						Running = false; CancelLock()
+					end
+				end)
+			end
+		end
+	end)
+end
+
+--// Functions
+
+Environment.Functions = {}
+
+function Environment.Functions:Exit()
+	for _, v in next, ServiceConnections do
+		v:Disconnect()
+	end
+
+	if Environment.FOVCircle.Remove then Environment.FOVCircle:Remove() end
+
+	getgenv().Aimbot.Functions = nil
+	getgenv().Aimbot = nil
+	
+	Load = nil; GetClosestPlayer = nil; CancelLock = nil
+end
+
+function Environment.Functions:Restart()
+	for _, v in next, ServiceConnections do
+		v:Disconnect()
+	end
+
+	Load()
+end
+
+function Environment.Functions:ResetSettings()
+	Environment.Settings = {
+		Enabled = true,
+		TeamCheck = false,
+		AliveCheck = true,
+		WallCheck = false,
+		Sensitivity = 0, -- Animation length (in seconds) before fully locking onto target
+		ThirdPerson = false, -- Uses mousemoverel instead of CFrame to support locking in third person (could be choppy)
+		ThirdPersonSensitivity = 3, -- Boundary: 0.1 - 5
+		TriggerKey = "MouseButton2",
+		Toggle = false,
+		LockPart = "Head" -- Body part to lock on
+	}
+
+	Environment.FOVSettings = {
+		Enabled = true,
+		Visible = true,
+		Amount = 100,
+		Color = Color3.fromRGB(255, 255, 255),
+		LockedColor = Color3.fromRGB(255, 70, 70),
+		Transparency = 0.5,
+		Sides = 60,
+		Thickness = 3,
+		Filled = false
+	}
+end
+
+--// Load
+
+Load()
