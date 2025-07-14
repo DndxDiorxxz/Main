@@ -39,6 +39,21 @@ screenGui.Name = "AimbotUI"
 screenGui.ResetOnSpawn = false
 screenGui.IgnoreGuiInset = true
 
+-- LOCK TARGET BUTTON
+local lockButton = Instance.new("TextButton", screenGui)
+lockButton.Size = UDim2.new(0, 120, 0, 40)
+lockButton.Position = UDim2.new(1, -130, 1, -100)
+lockButton.Text = "Lock Target"
+lockButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+lockButton.TextColor3 = Color3.new(1, 1, 1)
+lockButton.BorderSizePixel = 0
+lockButton.Font = Enum.Font.GothamBold
+lockButton.TextScaled = true
+
+lockButton.MouseButton1Click:Connect(function()
+    Aimbot.ManualLocked = GetClosestTarget()
+end)
+
 -- MOBILE TOGGLE BUTTON
 local mobileButton = Instance.new("TextButton", screenGui)
 mobileButton.Size = UDim2.new(0, 120, 0, 40)
@@ -141,47 +156,8 @@ Aimbot.FOVCircle.Thickness = 2
 Aimbot.FOVCircle.Radius = Aimbot.FOVSettings.Amount
 Aimbot.FOVCircle.Visible = true
 
--- TAP TO LOCK
-local tapCapture = Instance.new("ImageButton", screenGui)
-tapCapture.Size = UDim2.new(1, 0, 1, 0)
-tapCapture.Position = UDim2.new(0, 0, 0, 0)
-tapCapture.BackgroundTransparency = 1
-tapCapture.AutoButtonColor = false
-tapCapture.ZIndex = 1
-
-tapCapture.MouseButton1Down:Connect(function(x, y)
-    if not Running then return end
-
-    local closest = nil
-    local shortestDistance = Aimbot.FOVSettings.Amount or 2000
-
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player == LocalPlayer then continue end
-        local char = player.Character
-        local part = char and char:FindFirstChild(Aimbot.Settings.LockPart)
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-
-        if not (part and hum and (not Aimbot.Settings.AliveCheck or hum.Health > 0)) then continue end
-        if Aimbot.Settings.TeamCheck and player.Team == LocalPlayer.Team then continue end
-        if Aimbot.Settings.WallCheck and #(Camera:GetPartsObscuringTarget({part.Position}, char:GetDescendants())) > 0 then continue end
-
-        local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
-        if not onScreen then continue end
-
-        local dist = (Vector2.new(x, y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
-        if dist < shortestDistance then
-            shortestDistance = dist
-            closest = player
-        end
-    end
-
-    if closest then
-        Aimbot.ManualLocked = closest
-    end
-end)
-
 -- GET CLOSEST
-local function GetClosestTarget()
+function GetClosestTarget()
     local closest = nil
     local shortestDistance = Aimbot.FOVSettings.Amount or 2000
     local mousePos = UserInputService:GetMouseLocation()
