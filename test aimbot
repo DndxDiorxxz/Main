@@ -1,57 +1,87 @@
---// SERVICES
+--// Cache & Setup
+local select = select
+local pcall, getgenv, next, Vector2, mathclamp = select(1, pcall, getgenv, next, Vector2.new, math.clamp)
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
---// ENVIRONMENT
-getgenv().Aimbot = getgenv().Aimbot or {}
-local Aimbot = getgenv().Aimbot
+--// Aimbot Environment
+pcall(function()
+	getgenv().Aimbot.Functions:Exit()
+end)
 
---// STATE
-local Running = false
-Aimbot.LockedTarget = nil
+getgenv().Aimbot = {}
+local Environment = getgenv().Aimbot
 
---// SETTINGS
-Aimbot.Settings = {
-    Enabled = true,
-    TeamCheck = false,
-    AliveCheck = true,
-    WallCheck = false,
-    LockPart = "Head",
-    PredictionVelocity = 0.12,
-    Smoothness = 0.3
+local RequiredDistance, Running, Typing, Animation, ServiceConnections = 2000, false, false, nil, {}
+
+Environment.Settings = {
+	Enabled = true,
+	TeamCheck = false,
+	AliveCheck = true,
+	WallCheck = false,
+	ThirdPerson = false,
+	ThirdPersonSensitivity = 3,
+	LockPart = "Head",
+	PredictionVelocity = 0.120,
+	Smoothness = 0.3
 }
 
-Aimbot.FOVSettings = {
-    Enabled = true,
-    Visible = true,
-    Amount = 150,
-    Color = Color3.fromRGB(255, 255, 255),
-    LockedColor = Color3.fromRGB(255, 70, 70),
-    Transparency = 0.5,
-    Sides = 60,
-    Thickness = 2,
-    Filled = false
+Environment.FOVSettings = {
+	Enabled = true,
+	Visible = true,
+	Amount = 200,
+	Color = Color3.fromRGB(255, 255, 255),
+	LockedColor = Color3.fromRGB(255, 70, 70),
+	Transparency = 0.5,
+	Sides = 60,
+	Thickness = 3,
+	Filled = false
 }
 
---// GUI SETUP
+Environment.FOVCircle = Drawing.new("Circle")
+
+local function CancelLock()
+	Environment.Locked = nil
+	if Animation then Animation:Cancel() end
+	Environment.FOVCircle.Color = Environment.FOVSettings.Color
+end
+
+local function GetClosestPlayer()
+	RequiredDistance = Environment.FOVSettings.Enabled and Environment.FOVSettings.Amount or 2000
+
+	for _, v in next, Players:GetPlayers() do
+		if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild(Environment.Settings.LockPart) and v.Character:FindFirstChildOfClass("Humanoid") then
+			if Environment.Settings.TeamCheck and v.Team == LocalPlayer.Team then continue end
+			if Environment.Settings.AliveCheck and v.Character:FindFirstChildOfClass("Humanoid").Health <= 0 then continue end
+			if Environment.Settings.WallCheck and #(Camera:GetPartsObscuringTarget({v.Character[Environment.Settings.LockPart].Position}, v.Character:GetDescendants())) > 0 then continue end
+
+			local Vector, OnScreen = Camera:WorldToViewportPoint(v.Character[Environment.Settings.LockPart].Position)
+			local Distance = (Vector2(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y) - Vector2(Vector.X, Vector.Y)).Magnitude
+
+			if Distance < RequiredDistance and OnScreen then
+				RequiredDistance = Distance
+				Environment.Locked = v
+			end
+		end
+	end
+end
+
+--// GUI
 local screenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 screenGui.Name = "AimbotUI"
 screenGui.ResetOnSpawn = false
 screenGui.IgnoreGuiInset = true
 
---// DRAGGABLE FUNCTION
-local function makeDraggable(gui)
+local function makeDraggable(btn)
 	local dragging, dragInput, dragStart, startPos
-
-	gui.InputBegan:Connect(function(input)
+	btn.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
 			dragStart = input.Position
-			startPos = gui.Position
-
+			startPos = btn.Position
 			input.Changed:Connect(function()
 				if input.UserInputState == Enum.UserInputState.End then
 					dragging = false
@@ -59,26 +89,24 @@ local function makeDraggable(gui)
 			end)
 		end
 	end)
-
-	gui.InputChanged:Connect(function(input)
+	btn.InputChanged:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 			dragInput = input
 		end
 	end)
-
 	UserInputService.InputChanged:Connect(function(input)
 		if input == dragInput and dragging then
 			local delta = input.Position - dragStart
-			gui.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+			btn.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 		end
 	end)
 end
 
---// TOGGLE BUTTON
+-- Toggle Button
 local toggleBtn = Instance.new("TextButton", screenGui)
 toggleBtn.Size = UDim2.new(0, 140, 0, 45)
 toggleBtn.Position = UDim2.new(0, 20, 1, -100)
-toggleBtn.Text = "🟢 Aimbot: OFF"
+toggleBtn.Text = "🔴 Aimbot OFF"
 toggleBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 toggleBtn.TextColor3 = Color3.new(1, 1, 1)
 toggleBtn.BorderSizePixel = 0
@@ -88,11 +116,11 @@ makeDraggable(toggleBtn)
 
 toggleBtn.MouseButton1Click:Connect(function()
 	Running = not Running
-	toggleBtn.Text = (Running and "🔴 Aimbot: ON" or "🟢 Aimbot: OFF")
-	if not Running then Aimbot.LockedTarget = nil end
+	toggleBtn.Text = Running and "🟢 Aimbot ON" or "🔴 Aimbot OFF"
+	if not Running then CancelLock() end
 end)
 
---// LOCK TARGET BUTTON
+-- Lock Button
 local lockBtn = Instance.new("TextButton", screenGui)
 lockBtn.Size = UDim2.new(0, 140, 0, 45)
 lockBtn.Position = UDim2.new(0, 20, 1, -50)
@@ -105,81 +133,87 @@ lockBtn.TextScaled = true
 makeDraggable(lockBtn)
 
 lockBtn.MouseButton1Click:Connect(function()
-	Aimbot.LockedTarget = nil
-	local closest = nil
-	local shortestDistance = Aimbot.FOVSettings.Amount or 2000
-	local mousePos = UserInputService:GetMouseLocation()
-
-	for _, player in ipairs(Players:GetPlayers()) do
-		if player == LocalPlayer then continue end
-		local char = player.Character
-		local part = char and char:FindFirstChild(Aimbot.Settings.LockPart)
-		local hum = char and char:FindFirstChildOfClass("Humanoid")
-
-		if not (part and hum and (not Aimbot.Settings.AliveCheck or hum.Health > 0)) then continue end
-		if Aimbot.Settings.TeamCheck and player.Team == LocalPlayer.Team then continue end
-		if Aimbot.Settings.WallCheck and #(Camera:GetPartsObscuringTarget({part.Position}, char:GetDescendants())) > 0 then continue end
-
-		local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
-		if not onScreen then continue end
-
-		local distance = (Vector2.new(mousePos.X, mousePos.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
-		if distance < shortestDistance then
-			shortestDistance = distance
-			closest = player
-		end
-	end
-
-	if closest then
-		Aimbot.LockedTarget = closest
-	end
+	Environment.Locked = nil
+	GetClosestPlayer()
 end)
 
---// FOV CIRCLE
-Aimbot.FOVCircle = Drawing.new("Circle")
-Aimbot.FOVCircle.Transparency = 0.5
-Aimbot.FOVCircle.Thickness = Aimbot.FOVSettings.Thickness
-Aimbot.FOVCircle.Radius = Aimbot.FOVSettings.Amount
-Aimbot.FOVCircle.Filled = Aimbot.FOVSettings.Filled
-Aimbot.FOVCircle.NumSides = Aimbot.FOVSettings.Sides
-Aimbot.FOVCircle.Color = Aimbot.FOVSettings.Color
-Aimbot.FOVCircle.Visible = Aimbot.FOVSettings.Visible
-
---// AIMBOT LOOP
-RunService.RenderStepped:Connect(function()
+--// Aimbot Loop
+ServiceConnections.RenderSteppedConnection = RunService.RenderStepped:Connect(function()
+	local fov = Environment.FOVCircle
+	local fovSettings = Environment.FOVSettings
 	local mousePos = UserInputService:GetMouseLocation()
 
-	-- Update FOV
-	local fov = Aimbot.FOVCircle
-	local settings = Aimbot.FOVSettings
-	fov.Position = Vector2.new(mousePos.X, mousePos.Y)
-	fov.Radius = settings.Amount
-	fov.Visible = settings.Visible and settings.Enabled
-	fov.Thickness = settings.Thickness
-	fov.Filled = settings.Filled
-	fov.NumSides = settings.Sides
-	fov.Color = settings.Color
-	fov.Transparency = settings.Transparency
+	if fovSettings.Enabled and Environment.Settings.Enabled then
+		fov.Radius = fovSettings.Amount
+		fov.Thickness = fovSettings.Thickness
+		fov.Filled = fovSettings.Filled
+		fov.NumSides = fovSettings.Sides
+		fov.Color = fovSettings.Color
+		fov.Transparency = fovSettings.Transparency
+		fov.Visible = fovSettings.Visible
+		fov.Position = Vector2(mousePos.X, mousePos.Y)
+	else
+		fov.Visible = false
+	end
 
-	if Running and Aimbot.Settings.Enabled then
-		local target = Aimbot.LockedTarget
-		if target and target.Character then
-			local part = target.Character:FindFirstChild(Aimbot.Settings.LockPart)
-			local hum = target.Character:FindFirstChildOfClass("Humanoid")
-			if not part or not hum or hum.Health <= 0 then
-				Aimbot.LockedTarget = nil
-				fov.Color = settings.Color
-				return
+	if Running and Environment.Settings.Enabled then
+		if Environment.Locked and Environment.Locked.Character and Environment.Locked.Character:FindFirstChild(Environment.Settings.LockPart) then
+			local humanoid = Environment.Locked.Character:FindFirstChildOfClass("Humanoid")
+			if humanoid and humanoid.Health <= 0 then CancelLock() return end
+
+			local targetPart = Environment.Locked.Character[Environment.Settings.LockPart]
+			local predicted = targetPart.Position + (targetPart.Velocity * Environment.Settings.PredictionVelocity)
+
+			if Environment.Settings.ThirdPerson then
+				local vector = Camera:WorldToViewportPoint(predicted)
+				Environment.Settings.ThirdPersonSensitivity = mathclamp(Environment.Settings.ThirdPersonSensitivity, 0.1, 5)
+				mousemoverel(
+					(vector.X - mousePos.X) * Environment.Settings.ThirdPersonSensitivity,
+					(vector.Y - mousePos.Y) * Environment.Settings.ThirdPersonSensitivity
+				)
+			else
+				local dir = (predicted - Camera.CFrame.Position).Unit
+				local newCFrame = CFrame.new(Camera.CFrame.Position, Camera.CFrame.Position + dir)
+				Camera.CFrame = Camera.CFrame:Lerp(newCFrame, Environment.Settings.Smoothness)
 			end
-
-			local velocity = part.Velocity * Aimbot.Settings.PredictionVelocity
-			local predictedPos = part.Position + velocity
-			local direction = (predictedPos - Camera.CFrame.Position).Unit
-			local newCFrame = CFrame.new(Camera.CFrame.Position, Camera.CFrame.Position + direction)
-			Camera.CFrame = Camera.CFrame:Lerp(newCFrame, Aimbot.Settings.Smoothness)
-			fov.Color = settings.LockedColor
+			fov.Color = fovSettings.LockedColor
 		else
-			fov.Color = settings.Color
+			fov.Color = fovSettings.Color
 		end
 	end
 end)
+
+--// Cleanup & Reset
+Environment.Functions = {}
+
+function Environment.Functions:Exit()
+	for _, v in next, ServiceConnections do v:Disconnect() end
+	if Environment.FOVCircle.Remove then Environment.FOVCircle:Remove() end
+	getgenv().Aimbot.Functions = nil
+	getgenv().Aimbot = nil
+end
+
+function Environment.Functions:ResetSettings()
+	Environment.Settings = {
+		Enabled = true,
+		TeamCheck = false,
+		AliveCheck = true,
+		WallCheck = false,
+		ThirdPerson = false,
+		ThirdPersonSensitivity = 3,
+		LockPart = "Head",
+		PredictionVelocity = 0.165,
+		Smoothness = 0.075
+	}
+	Environment.FOVSettings = {
+		Enabled = true,
+		Visible = true,
+		Amount = 100,
+		Color = Color3.fromRGB(255, 255, 255),
+		LockedColor = Color3.fromRGB(255, 70, 70),
+		Transparency = 0.5,
+		Sides = 60,
+		Thickness = 3,
+		Filled = false
+	}
+end
