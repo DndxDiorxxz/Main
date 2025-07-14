@@ -1,219 +1,142 @@
---// Cache & Setup
-local select = select
-local pcall, getgenv, next, Vector2, mathclamp = select(1, pcall, getgenv, next, Vector2.new, math.clamp)
+-- Settings Panel UI by ChatGPT
+
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
---// Aimbot Environment
-pcall(function()
-	getgenv().Aimbot.Functions:Exit()
-end)
-
-getgenv().Aimbot = {}
-local Environment = getgenv().Aimbot
-
-local RequiredDistance, Running, Typing, Animation, ServiceConnections = 2000, false, false, nil, {}
-
-Environment.Settings = {
-	Enabled = true,
-	TeamCheck = false,
-	AliveCheck = true,
-	WallCheck = false,
-	ThirdPerson = false,
-	ThirdPersonSensitivity = 3,
-	LockPart = "Head",
-	PredictionVelocity = 0.120,
-	Smoothness = 0.3
-}
-
-Environment.FOVSettings = {
-	Enabled = true,
-	Visible = true,
-	Amount = 200,
-	Color = Color3.fromRGB(255, 255, 255),
-	LockedColor = Color3.fromRGB(255, 70, 70),
-	Transparency = 0.5,
-	Sides = 60,
-	Thickness = 3,
-	Filled = false
-}
-
-Environment.FOVCircle = Drawing.new("Circle")
-
-local function CancelLock()
-	Environment.Locked = nil
-	if Animation then Animation:Cancel() end
-	Environment.FOVCircle.Color = Environment.FOVSettings.Color
+-- Remove old GUI if it exists
+if PlayerGui:FindFirstChild("AimbotSettingsUI") then
+	PlayerGui.AimbotSettingsUI:Destroy()
 end
 
-local function GetClosestPlayer()
-	RequiredDistance = Environment.FOVSettings.Enabled and Environment.FOVSettings.Amount or 2000
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "AimbotSettingsUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = PlayerGui
 
-	for _, v in next, Players:GetPlayers() do
-		if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild(Environment.Settings.LockPart) and v.Character:FindFirstChildOfClass("Humanoid") then
-			if Environment.Settings.TeamCheck and v.Team == LocalPlayer.Team then continue end
-			if Environment.Settings.AliveCheck and v.Character:FindFirstChildOfClass("Humanoid").Health <= 0 then continue end
-			if Environment.Settings.WallCheck and #(Camera:GetPartsObscuringTarget({v.Character[Environment.Settings.LockPart].Position}, v.Character:GetDescendants())) > 0 then continue end
+-- Toggle button
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Size = UDim2.new(0, 120, 0, 40)
+ToggleButton.Position = UDim2.new(0, 20, 0, 100)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+ToggleButton.Text = "⚙️ Settings"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.Font = Enum.Font.Gotham
+ToggleButton.TextSize = 18
+ToggleButton.AutoButtonColor = true
+ToggleButton.Parent = ScreenGui
 
-			local Vector, OnScreen = Camera:WorldToViewportPoint(v.Character[Environment.Settings.LockPart].Position)
-			local Distance = (Vector2(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y) - Vector2(Vector.X, Vector.Y)).Magnitude
+local UICorner = Instance.new("UICorner", ToggleButton)
+UICorner.CornerRadius = UDim.new(0, 8)
 
-			if Distance < RequiredDistance and OnScreen then
-				RequiredDistance = Distance
-				Environment.Locked = v
-			end
-		end
-	end
-end
+-- Settings Frame
+local SettingsFrame = Instance.new("Frame")
+SettingsFrame.Name = "SettingsPanel"
+SettingsFrame.Size = UDim2.new(0, 300, 0, 360)
+SettingsFrame.Position = UDim2.new(0, 20, 0, 150)
+SettingsFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+SettingsFrame.Visible = false
+SettingsFrame.Parent = ScreenGui
 
---// GUI
-local screenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-screenGui.Name = "AimbotUI"
-screenGui.ResetOnSpawn = false
-screenGui.IgnoreGuiInset = true
+Instance.new("UICorner", SettingsFrame).CornerRadius = UDim.new(0, 10)
+Instance.new("UIStroke", SettingsFrame).Color = Color3.fromRGB(90, 90, 90)
 
-local function makeDraggable(btn)
-	local dragging, dragInput, dragStart, startPos
-	btn.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragStart = input.Position
-			startPos = btn.Position
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					dragging = false
-				end
-			end)
-		end
-	end)
-	btn.InputChanged:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-			dragInput = input
-		end
-	end)
-	UserInputService.InputChanged:Connect(function(input)
-		if input == dragInput and dragging then
-			local delta = input.Position - dragStart
-			btn.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-		end
+-- Scrolling list layout
+local ScrollingFrame = Instance.new("ScrollingFrame")
+ScrollingFrame.Size = UDim2.new(1, -20, 1, -20)
+ScrollingFrame.Position = UDim2.new(0, 10, 0, 10)
+ScrollingFrame.BackgroundTransparency = 1
+ScrollingFrame.ScrollBarThickness = 4
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 500)
+ScrollingFrame.Parent = SettingsFrame
+
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.Padding = UDim.new(0, 10)
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Parent = ScrollingFrame
+
+-- Utility: Add toggle
+local function createToggle(label, settingKey)
+	local Toggle = Instance.new("TextButton")
+	Toggle.Size = UDim2.new(1, 0, 0, 40)
+	Toggle.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	Toggle.Text = label .. ": OFF"
+	Toggle.TextColor3 = Color3.new(1, 1, 1)
+	Toggle.Font = Enum.Font.Gotham
+	Toggle.TextSize = 16
+	Toggle.AutoButtonColor = true
+	Toggle.Name = settingKey
+	Toggle.Parent = ScrollingFrame
+
+	Instance.new("UICorner", Toggle).CornerRadius = UDim.new(0, 6)
+
+	Toggle.MouseButton1Click:Connect(function()
+		local setting = getgenv().ExunysDeveloperAimbot.Settings
+		setting[settingKey] = not setting[settingKey]
+		Toggle.Text = label .. ": " .. (setting[settingKey] and "ON" or "OFF")
 	end)
 end
 
--- Toggle Button
-local toggleBtn = Instance.new("TextButton", screenGui)
-toggleBtn.Size = UDim2.new(0, 140, 0, 45)
-toggleBtn.Position = UDim2.new(0, 20, 1, -100)
-toggleBtn.Text = "🔴 Aimbot OFF"
-toggleBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-toggleBtn.TextColor3 = Color3.new(1, 1, 1)
-toggleBtn.BorderSizePixel = 0
-toggleBtn.Font = Enum.Font.GothamBold
-toggleBtn.TextScaled = true
-makeDraggable(toggleBtn)
+-- Utility: Add slider
+local function createSlider(label, settingKey, minValue, maxValue)
+	local Frame = Instance.new("Frame")
+	Frame.Size = UDim2.new(1, 0, 0, 50)
+	Frame.BackgroundTransparency = 1
+	Frame.Parent = ScrollingFrame
 
-toggleBtn.MouseButton1Click:Connect(function()
-	Running = not Running
-	toggleBtn.Text = Running and "🟢 Aimbot ON" or "🔴 Aimbot OFF"
-	if not Running then CancelLock() end
-end)
+	local Label = Instance.new("TextLabel")
+	Label.Size = UDim2.new(1, 0, 0, 20)
+	Label.Position = UDim2.new(0, 0, 0, 0)
+	Label.BackgroundTransparency = 1
+	Label.TextColor3 = Color3.new(1, 1, 1)
+	Label.Font = Enum.Font.Gotham
+	Label.TextSize = 14
+	Label.Text = label .. ": " .. getgenv().ExunysDeveloperAimbot.Settings[settingKey]
+	Label.TextXAlignment = Enum.TextXAlignment.Left
+	Label.Parent = Frame
 
--- Lock Button
-local lockBtn = Instance.new("TextButton", screenGui)
-lockBtn.Size = UDim2.new(0, 140, 0, 45)
-lockBtn.Position = UDim2.new(0, 20, 1, -50)
-lockBtn.Text = "🎯 Lock Target"
-lockBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-lockBtn.TextColor3 = Color3.new(1, 1, 1)
-lockBtn.BorderSizePixel = 0
-lockBtn.Font = Enum.Font.GothamBold
-lockBtn.TextScaled = true
-makeDraggable(lockBtn)
+	local Slider = Instance.new("TextBox")
+	Slider.Size = UDim2.new(1, 0, 0, 24)
+	Slider.Position = UDim2.new(0, 0, 0, 24)
+	Slider.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+	Slider.Text = tostring(getgenv().ExunysDeveloperAimbot.Settings[settingKey])
+	Slider.TextColor3 = Color3.new(1, 1, 1)
+	Slider.Font = Enum.Font.Gotham
+	Slider.TextSize = 14
+	Slider.ClearTextOnFocus = false
+	Slider.Parent = Frame
 
-lockBtn.MouseButton1Click:Connect(function()
-	Environment.Locked = nil
-	GetClosestPlayer()
-end)
+	Instance.new("UICorner", Slider).CornerRadius = UDim.new(0, 5)
 
---// Aimbot Loop
-ServiceConnections.RenderSteppedConnection = RunService.RenderStepped:Connect(function()
-	local fov = Environment.FOVCircle
-	local fovSettings = Environment.FOVSettings
-	local mousePos = UserInputService:GetMouseLocation()
-
-	if fovSettings.Enabled and Environment.Settings.Enabled then
-		fov.Radius = fovSettings.Amount
-		fov.Thickness = fovSettings.Thickness
-		fov.Filled = fovSettings.Filled
-		fov.NumSides = fovSettings.Sides
-		fov.Color = fovSettings.Color
-		fov.Transparency = fovSettings.Transparency
-		fov.Visible = fovSettings.Visible
-		fov.Position = Vector2(mousePos.X, mousePos.Y)
-	else
-		fov.Visible = false
-	end
-
-	if Running and Environment.Settings.Enabled then
-		if Environment.Locked and Environment.Locked.Character and Environment.Locked.Character:FindFirstChild(Environment.Settings.LockPart) then
-			local humanoid = Environment.Locked.Character:FindFirstChildOfClass("Humanoid")
-			if humanoid and humanoid.Health <= 0 then CancelLock() return end
-
-			local targetPart = Environment.Locked.Character[Environment.Settings.LockPart]
-			local predicted = targetPart.Position + (targetPart.Velocity * Environment.Settings.PredictionVelocity)
-
-			if Environment.Settings.ThirdPerson then
-				local vector = Camera:WorldToViewportPoint(predicted)
-				Environment.Settings.ThirdPersonSensitivity = mathclamp(Environment.Settings.ThirdPersonSensitivity, 0.1, 5)
-				mousemoverel(
-					(vector.X - mousePos.X) * Environment.Settings.ThirdPersonSensitivity,
-					(vector.Y - mousePos.Y) * Environment.Settings.ThirdPersonSensitivity
-				)
-			else
-				local dir = (predicted - Camera.CFrame.Position).Unit
-				local newCFrame = CFrame.new(Camera.CFrame.Position, Camera.CFrame.Position + dir)
-				Camera.CFrame = Camera.CFrame:Lerp(newCFrame, Environment.Settings.Smoothness)
-			end
-			fov.Color = fovSettings.LockedColor
+	Slider.FocusLost:Connect(function()
+		local val = tonumber(Slider.Text)
+		if val then
+			val = math.clamp(val, minValue, maxValue)
+			getgenv().ExunysDeveloperAimbot.Settings[settingKey] = val
+			Label.Text = label .. ": " .. val
+			Slider.Text = tostring(val)
 		else
-			fov.Color = fovSettings.Color
+			Slider.Text = tostring(getgenv().ExunysDeveloperAimbot.Settings[settingKey])
 		end
-	end
+	end)
+end
+
+-- Add toggles
+createToggle("Enabled", "Enabled")
+createToggle("Team Check", "TeamCheck")
+createToggle("Alive Check", "AliveCheck")
+createToggle("Wall Check", "WallCheck")
+createToggle("Offset Move", "OffsetToMoveDirection")
+
+-- Add sliders
+createSlider("Sensitivity", "Sensitivity", 0, 5)
+createSlider("Sensitivity2", "Sensitivity2", 0.1, 10)
+createSlider("Offset Increment", "OffsetIncrement", 1, 30)
+
+-- Toggle logic
+ToggleButton.MouseButton1Click:Connect(function()
+	SettingsFrame.Visible = not SettingsFrame.Visible
 end)
-
---// Cleanup & Reset
-Environment.Functions = {}
-
-function Environment.Functions:Exit()
-	for _, v in next, ServiceConnections do v:Disconnect() end
-	if Environment.FOVCircle.Remove then Environment.FOVCircle:Remove() end
-	getgenv().Aimbot.Functions = nil
-	getgenv().Aimbot = nil
-end
-
-function Environment.Functions:ResetSettings()
-	Environment.Settings = {
-		Enabled = true,
-		TeamCheck = false,
-		AliveCheck = true,
-		WallCheck = false,
-		ThirdPerson = false,
-		ThirdPersonSensitivity = 3,
-		LockPart = "Head",
-		PredictionVelocity = 0.165,
-		Smoothness = 0.075
-	}
-	Environment.FOVSettings = {
-		Enabled = true,
-		Visible = true,
-		Amount = 100,
-		Color = Color3.fromRGB(255, 255, 255),
-		LockedColor = Color3.fromRGB(255, 70, 70),
-		Transparency = 0.5,
-		Sides = 60,
-		Thickness = 3,
-		Filled = false
-	}
-end
