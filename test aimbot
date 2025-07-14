@@ -8,8 +8,6 @@ local LocalPlayer = Players.LocalPlayer
 --// ENVIRONMENT
 getgenv().Aimbot = getgenv().Aimbot or {}
 local Aimbot = getgenv().Aimbot
-
---// INITIAL STATE
 local Running = false
 
 --// DEFAULT SETTINGS
@@ -41,7 +39,7 @@ screenGui.Name = "AimbotUI"
 screenGui.ResetOnSpawn = false
 screenGui.IgnoreGuiInset = true
 
---// MOBILE TOGGLE BUTTON
+-- MOBILE TOGGLE BUTTON
 local mobileButton = Instance.new("TextButton", screenGui)
 mobileButton.Size = UDim2.new(0, 120, 0, 40)
 mobileButton.Position = UDim2.new(1, -130, 1, -50)
@@ -49,7 +47,6 @@ mobileButton.Text = "Aimbot: OFF"
 mobileButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 mobileButton.TextColor3 = Color3.new(1, 1, 1)
 mobileButton.BorderSizePixel = 0
-mobileButton.AutoButtonColor = true
 mobileButton.Font = Enum.Font.GothamBold
 mobileButton.TextScaled = true
 
@@ -58,7 +55,7 @@ mobileButton.MouseButton1Click:Connect(function()
     mobileButton.Text = "Aimbot: " .. (Running and "ON" or "OFF")
 end)
 
---// GUI PANEL
+-- SETTINGS PANEL
 local panel = Instance.new("Frame", screenGui)
 panel.Size = UDim2.new(0, 250, 0, 300)
 panel.Position = UDim2.new(0, 10, 0, 10)
@@ -70,13 +67,12 @@ panel.Draggable = true
 
 local title = Instance.new("TextLabel", panel)
 title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "🎯 Aimbot Settings"
+title.Text = "\240\159\143\175 Aimbot Settings"
 title.TextColor3 = Color3.new(1, 1, 1)
 title.BackgroundTransparency = 1
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
 
---// TOGGLE CREATOR
 local function makeToggle(name, default, index, callback)
     local button = Instance.new("TextButton", panel)
     button.Size = UDim2.new(1, -20, 0, 30)
@@ -98,14 +94,13 @@ local function makeToggle(name, default, index, callback)
     callback(default)
 end
 
---// SETTINGS TOGGLES
 makeToggle("Enabled", true, 0, function(val) Aimbot.Settings.Enabled = val end)
 makeToggle("Team Check", false, 1, function(val) Aimbot.Settings.TeamCheck = val end)
 makeToggle("Alive Check", true, 2, function(val) Aimbot.Settings.AliveCheck = val end)
 makeToggle("Wall Check", false, 3, function(val) Aimbot.Settings.WallCheck = val end)
 makeToggle("Show FOV", true, 4, function(val) Aimbot.FOVSettings.Visible = val end)
 
---// FOV SIZE INPUT
+-- FOV SIZE INPUT
 local fovBox = Instance.new("TextBox", panel)
 fovBox.Size = UDim2.new(1, -20, 0, 30)
 fovBox.Position = UDim2.new(0, 10, 0, 220)
@@ -123,7 +118,7 @@ fovBox.FocusLost:Connect(function()
     end
 end)
 
---// SHOW/HIDE PANEL BUTTON
+-- SHOW/HIDE PANEL BUTTON
 local showBtn = Instance.new("TextButton", screenGui)
 showBtn.Size = UDim2.new(0, 100, 0, 30)
 showBtn.Position = UDim2.new(0, 10, 1, -40)
@@ -139,15 +134,53 @@ showBtn.MouseButton1Click:Connect(function()
     showBtn.Text = panel.Visible and "Hide Panel" or "Show Panel"
 end)
 
---// FOV CIRCLE
+-- FOV CIRCLE
 Aimbot.FOVCircle = Drawing.new("Circle")
-Aimbot.FOVCircle.Position = Vector2.new(0, 0)
 Aimbot.FOVCircle.Transparency = 0.5
 Aimbot.FOVCircle.Thickness = 2
 Aimbot.FOVCircle.Radius = Aimbot.FOVSettings.Amount
 Aimbot.FOVCircle.Visible = true
 
---// CLOSEST PLAYER FUNCTION
+-- TAP TO LOCK
+local tapCapture = Instance.new("ImageButton", screenGui)
+tapCapture.Size = UDim2.new(1, 0, 1, 0)
+tapCapture.Position = UDim2.new(0, 0, 0, 0)
+tapCapture.BackgroundTransparency = 1
+tapCapture.AutoButtonColor = false
+tapCapture.ZIndex = 1
+
+tapCapture.MouseButton1Down:Connect(function(x, y)
+    if not Running then return end
+
+    local closest = nil
+    local shortestDistance = Aimbot.FOVSettings.Amount or 2000
+
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player == LocalPlayer then continue end
+        local char = player.Character
+        local part = char and char:FindFirstChild(Aimbot.Settings.LockPart)
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+
+        if not (part and hum and (not Aimbot.Settings.AliveCheck or hum.Health > 0)) then continue end
+        if Aimbot.Settings.TeamCheck and player.Team == LocalPlayer.Team then continue end
+        if Aimbot.Settings.WallCheck and #(Camera:GetPartsObscuringTarget({part.Position}, char:GetDescendants())) > 0 then continue end
+
+        local screenPos, onScreen = Camera:WorldToViewportPoint(part.Position)
+        if not onScreen then continue end
+
+        local dist = (Vector2.new(x, y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
+        if dist < shortestDistance then
+            shortestDistance = dist
+            closest = player
+        end
+    end
+
+    if closest then
+        Aimbot.ManualLocked = closest
+    end
+end)
+
+-- GET CLOSEST
 local function GetClosestTarget()
     local closest = nil
     local shortestDistance = Aimbot.FOVSettings.Amount or 2000
@@ -176,13 +209,12 @@ local function GetClosestTarget()
     return closest
 end
 
---// AIMBOT LOOP
+-- LOOP
 RunService.RenderStepped:Connect(function()
     local mousePos = UserInputService:GetMouseLocation()
-
-    -- Update FOV circle
     local fov = Aimbot.FOVCircle
     local settings = Aimbot.FOVSettings
+
     fov.Position = Vector2.new(mousePos.X, mousePos.Y)
     fov.Radius = settings.Amount
     fov.Visible = settings.Visible and settings.Enabled
@@ -193,7 +225,7 @@ RunService.RenderStepped:Connect(function()
     fov.Transparency = settings.Transparency
 
     if Running and Aimbot.Settings.Enabled then
-        local target = GetClosestTarget()
+        local target = Aimbot.ManualLocked or GetClosestTarget()
         if target and target.Character then
             local part = target.Character:FindFirstChild(Aimbot.Settings.LockPart)
             if part then
@@ -206,6 +238,7 @@ RunService.RenderStepped:Connect(function()
             end
         else
             Aimbot.FOVCircle.Color = settings.Color
+            Aimbot.ManualLocked = nil
         end
     end
 end)
