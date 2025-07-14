@@ -1,142 +1,138 @@
--- Settings Panel UI by ChatGPT
-
+-- 📦 Full Aimbot Settings GUI (Mobile/PC Compatible)
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
-local LocalPlayer = Players.LocalPlayer
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local player = Players.LocalPlayer
+local Aimbot = getgenv().Aimbot
 
--- Remove old GUI if it exists
-if PlayerGui:FindFirstChild("AimbotSettingsUI") then
-	PlayerGui.AimbotSettingsUI:Destroy()
+-- ⚙️ Ensure Aimbot is loaded
+if not Aimbot or not Aimbot.Settings then
+    warn("Aimbot not initialized.")
+    return
 end
 
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "AimbotSettingsUI"
-ScreenGui.ResetOnSpawn = false
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.Parent = PlayerGui
+-- GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "AimbotUI"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.Parent = player:WaitForChild("PlayerGui")
 
--- Toggle button
-local ToggleButton = Instance.new("TextButton")
-ToggleButton.Name = "ToggleButton"
-ToggleButton.Size = UDim2.new(0, 120, 0, 40)
-ToggleButton.Position = UDim2.new(0, 20, 0, 100)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-ToggleButton.Text = "⚙️ Settings"
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.Font = Enum.Font.Gotham
-ToggleButton.TextSize = 18
-ToggleButton.AutoButtonColor = true
-ToggleButton.Parent = ScreenGui
-
-local UICorner = Instance.new("UICorner", ToggleButton)
-UICorner.CornerRadius = UDim.new(0, 8)
+-- Toggle Button
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Size = UDim2.new(0, 100, 0, 40)
+toggleBtn.Position = UDim2.new(0.02, 0, 0.88, 0)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+toggleBtn.TextColor3 = Color3.new(1, 1, 1)
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextSize = 14
+toggleBtn.Text = "Aimbot ⚙️"
+toggleBtn.Parent = gui
 
 -- Settings Frame
-local SettingsFrame = Instance.new("Frame")
-SettingsFrame.Name = "SettingsPanel"
-SettingsFrame.Size = UDim2.new(0, 300, 0, 360)
-SettingsFrame.Position = UDim2.new(0, 20, 0, 150)
-SettingsFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-SettingsFrame.Visible = false
-SettingsFrame.Parent = ScreenGui
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 250, 0, 310)
+frame.Position = UDim2.new(0.02, 0, 0.55, 0)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.Visible = false
+frame.Parent = gui
 
-Instance.new("UICorner", SettingsFrame).CornerRadius = UDim.new(0, 10)
-Instance.new("UIStroke", SettingsFrame).Color = Color3.fromRGB(90, 90, 90)
+Instance.new("UICorner", frame)
 
--- Scrolling list layout
-local ScrollingFrame = Instance.new("ScrollingFrame")
-ScrollingFrame.Size = UDim2.new(1, -20, 1, -20)
-ScrollingFrame.Position = UDim2.new(0, 10, 0, 10)
-ScrollingFrame.BackgroundTransparency = 1
-ScrollingFrame.ScrollBarThickness = 4
-ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 500)
-ScrollingFrame.Parent = SettingsFrame
+local function makeLabel(text, yPos)
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, -20, 0, 20)
+	label.Position = UDim2.new(0, 10, 0, yPos)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = Color3.new(1, 1, 1)
+	label.Font = Enum.Font.Gotham
+	label.TextSize = 14
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Parent = frame
+	return label
+end
 
-local UIListLayout = Instance.new("UIListLayout")
-UIListLayout.Padding = UDim.new(0, 10)
-UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.Parent = ScrollingFrame
+local function makeSlider(yPos, min, max, settingKey)
+	local bar = Instance.new("TextButton")
+	bar.Size = UDim2.new(0, 230, 0, 10)
+	bar.Position = UDim2.new(0, 10, 0, yPos)
+	bar.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+	bar.Text = ""
+	bar.AutoButtonColor = false
+	bar.Parent = frame
 
--- Utility: Add toggle
-local function createToggle(label, settingKey)
-	local Toggle = Instance.new("TextButton")
-	Toggle.Size = UDim2.new(1, 0, 0, 40)
-	Toggle.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-	Toggle.Text = label .. ": OFF"
-	Toggle.TextColor3 = Color3.new(1, 1, 1)
-	Toggle.Font = Enum.Font.Gotham
-	Toggle.TextSize = 16
-	Toggle.AutoButtonColor = true
-	Toggle.Name = settingKey
-	Toggle.Parent = ScrollingFrame
+	local fill = Instance.new("Frame")
+	fill.Size = UDim2.new((Aimbot.Settings[settingKey] or min) / max, 0, 1, 0)
+	fill.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+	fill.Parent = bar
 
-	Instance.new("UICorner", Toggle).CornerRadius = UDim.new(0, 6)
-
-	Toggle.MouseButton1Click:Connect(function()
-		local setting = getgenv().ExunysDeveloperAimbot.Settings
-		setting[settingKey] = not setting[settingKey]
-		Toggle.Text = label .. ": " .. (setting[settingKey] and "ON" or "OFF")
+	bar.MouseButton1Down:Connect(function()
+		local conn
+		conn = UserInputService.InputChanged:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseMovement then
+				local x = math.clamp((input.Position.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
+				local val = math.floor(min + (max - min) * x)
+				fill.Size = UDim2.new(x, 0, 1, 0)
+				Aimbot.Settings[settingKey] = val
+				bar.Text = settingKey .. ": " .. val
+			end
+		end)
+		UserInputService.InputEnded:Wait()
+		conn:Disconnect()
 	end)
 end
 
--- Utility: Add slider
-local function createSlider(label, settingKey, minValue, maxValue)
-	local Frame = Instance.new("Frame")
-	Frame.Size = UDim2.new(1, 0, 0, 50)
-	Frame.BackgroundTransparency = 1
-	Frame.Parent = ScrollingFrame
+local function makeToggle(yPos, settingKey)
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(0, 230, 0, 30)
+	button.Position = UDim2.new(0, 10, 0, yPos)
+	button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	button.TextColor3 = Color3.fromRGB(255, 255, 255)
+	button.Font = Enum.Font.Gotham
+	button.TextSize = 14
+	button.Text = settingKey .. ": " .. tostring(Aimbot.Settings[settingKey])
+	button.Parent = frame
 
-	local Label = Instance.new("TextLabel")
-	Label.Size = UDim2.new(1, 0, 0, 20)
-	Label.Position = UDim2.new(0, 0, 0, 0)
-	Label.BackgroundTransparency = 1
-	Label.TextColor3 = Color3.new(1, 1, 1)
-	Label.Font = Enum.Font.Gotham
-	Label.TextSize = 14
-	Label.Text = label .. ": " .. getgenv().ExunysDeveloperAimbot.Settings[settingKey]
-	Label.TextXAlignment = Enum.TextXAlignment.Left
-	Label.Parent = Frame
-
-	local Slider = Instance.new("TextBox")
-	Slider.Size = UDim2.new(1, 0, 0, 24)
-	Slider.Position = UDim2.new(0, 0, 0, 24)
-	Slider.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-	Slider.Text = tostring(getgenv().ExunysDeveloperAimbot.Settings[settingKey])
-	Slider.TextColor3 = Color3.new(1, 1, 1)
-	Slider.Font = Enum.Font.Gotham
-	Slider.TextSize = 14
-	Slider.ClearTextOnFocus = false
-	Slider.Parent = Frame
-
-	Instance.new("UICorner", Slider).CornerRadius = UDim.new(0, 5)
-
-	Slider.FocusLost:Connect(function()
-		local val = tonumber(Slider.Text)
-		if val then
-			val = math.clamp(val, minValue, maxValue)
-			getgenv().ExunysDeveloperAimbot.Settings[settingKey] = val
-			Label.Text = label .. ": " .. val
-			Slider.Text = tostring(val)
-		else
-			Slider.Text = tostring(getgenv().ExunysDeveloperAimbot.Settings[settingKey])
-		end
+	button.MouseButton1Click:Connect(function()
+		local new = not Aimbot.Settings[settingKey]
+		Aimbot.Settings[settingKey] = new
+		button.Text = settingKey .. ": " .. tostring(new)
 	end)
 end
 
--- Add toggles
-createToggle("Enabled", "Enabled")
-createToggle("Team Check", "TeamCheck")
-createToggle("Alive Check", "AliveCheck")
-createToggle("Wall Check", "WallCheck")
-createToggle("Offset Move", "OffsetToMoveDirection")
+-- UI Elements
+makeLabel("Aimbot Settings", 10)
 
--- Add sliders
-createSlider("Sensitivity", "Sensitivity", 0, 5)
-createSlider("Sensitivity2", "Sensitivity2", 0.1, 10)
-createSlider("Offset Increment", "OffsetIncrement", 1, 30)
+makeLabel("FOV Radius", 40)
+makeSlider(65, 10, 360, "Amount")
 
--- Toggle logic
-ToggleButton.MouseButton1Click:Connect(function()
-	SettingsFrame.Visible = not SettingsFrame.Visible
+makeLabel("Sensitivity", 95)
+makeSlider(120, 0, 3, "Sensitivity")
+
+makeToggle(150, "Enabled")
+makeToggle(185, "ThirdPerson")
+makeToggle(220, "TeamCheck")
+makeToggle(255, "WallCheck")
+
+-- Reset Settings Button
+local reset = Instance.new("TextButton")
+reset.Size = UDim2.new(0, 230, 0, 30)
+reset.Position = UDim2.new(0, 10, 0, 290)
+reset.BackgroundColor3 = Color3.fromRGB(120, 40, 40)
+reset.TextColor3 = Color3.new(1, 1, 1)
+reset.Font = Enum.Font.GothamBold
+reset.TextSize = 14
+reset.Text = "Reset Settings"
+reset.Parent = frame
+
+reset.MouseButton1Click:Connect(function()
+	if Aimbot.Functions and Aimbot.Functions.ResetSettings then
+		Aimbot.Functions.ResetSettings()
+	end
+end)
+
+-- Toggle GUI visibility
+toggleBtn.MouseButton1Click:Connect(function()
+	frame.Visible = not frame.Visible
 end)
