@@ -8,7 +8,10 @@ local LocalPlayer = Players.LocalPlayer
 --// ENVIRONMENT
 getgenv().Aimbot = getgenv().Aimbot or {}
 local Aimbot = getgenv().Aimbot
+
+--// INITIAL STATE
 local Running = false
+Aimbot.LockedTarget = nil
 
 --// DEFAULT SETTINGS
 Aimbot.Settings = {
@@ -39,125 +42,36 @@ screenGui.Name = "AimbotUI"
 screenGui.ResetOnSpawn = false
 screenGui.IgnoreGuiInset = true
 
--- LOCK TARGET BUTTON
-local lockButton = Instance.new("TextButton", screenGui)
-lockButton.Size = UDim2.new(0, 120, 0, 40)
-lockButton.Position = UDim2.new(1, -130, 1, -100)
-lockButton.Text = "Lock Target"
-lockButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-lockButton.TextColor3 = Color3.new(1, 1, 1)
-lockButton.BorderSizePixel = 0
-lockButton.Font = Enum.Font.GothamBold
-lockButton.TextScaled = true
+--// TOGGLE AIMBOT BUTTON
+local toggleBtn = Instance.new("TextButton", screenGui)
+toggleBtn.Size = UDim2.new(0, 120, 0, 40)
+toggleBtn.Position = UDim2.new(1, -130, 1, -100)
+toggleBtn.Text = "Aimbot: OFF"
+toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+toggleBtn.TextColor3 = Color3.new(1, 1, 1)
+toggleBtn.BorderSizePixel = 0
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.TextScaled = true
 
-lockButton.MouseButton1Click:Connect(function()
-    Aimbot.ManualLocked = GetClosestTarget()
-end)
-
--- MOBILE TOGGLE BUTTON
-local mobileButton = Instance.new("TextButton", screenGui)
-mobileButton.Size = UDim2.new(0, 120, 0, 40)
-mobileButton.Position = UDim2.new(1, -130, 1, -50)
-mobileButton.Text = "Aimbot: OFF"
-mobileButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-mobileButton.TextColor3 = Color3.new(1, 1, 1)
-mobileButton.BorderSizePixel = 0
-mobileButton.Font = Enum.Font.GothamBold
-mobileButton.TextScaled = true
-
-mobileButton.MouseButton1Click:Connect(function()
+toggleBtn.MouseButton1Click:Connect(function()
     Running = not Running
-    mobileButton.Text = "Aimbot: " .. (Running and "ON" or "OFF")
+    toggleBtn.Text = "Aimbot: " .. (Running and "ON" or "OFF")
+    if not Running then Aimbot.LockedTarget = nil end
 end)
 
--- SETTINGS PANEL
-local panel = Instance.new("Frame", screenGui)
-panel.Size = UDim2.new(0, 250, 0, 300)
-panel.Position = UDim2.new(0, 10, 0, 10)
-panel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-panel.BorderSizePixel = 0
-panel.Visible = true
-panel.Active = true
-panel.Draggable = true
+--// LOCK TARGET BUTTON
+local lockBtn = Instance.new("TextButton", screenGui)
+lockBtn.Size = UDim2.new(0, 120, 0, 40)
+lockBtn.Position = UDim2.new(1, -130, 1, -50)
+lockBtn.Text = "🎯 Lock Target"
+lockBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+lockBtn.TextColor3 = Color3.new(1, 1, 1)
+lockBtn.BorderSizePixel = 0
+lockBtn.Font = Enum.Font.GothamBold
+lockBtn.TextScaled = true
 
-local title = Instance.new("TextLabel", panel)
-title.Size = UDim2.new(1, 0, 0, 30)
-title.Text = "\240\159\143\175 Aimbot Settings"
-title.TextColor3 = Color3.new(1, 1, 1)
-title.BackgroundTransparency = 1
-title.TextScaled = true
-title.Font = Enum.Font.GothamBold
-
-local function makeToggle(name, default, index, callback)
-    local button = Instance.new("TextButton", panel)
-    button.Size = UDim2.new(1, -20, 0, 30)
-    button.Position = UDim2.new(0, 10, 0, 35 + index * 35)
-    button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    button.TextColor3 = Color3.new(1, 1, 1)
-    button.Text = name .. ": " .. (default and "ON" or "OFF")
-    button.BorderSizePixel = 0
-    button.Font = Enum.Font.Gotham
-    button.TextScaled = true
-
-    local state = default
-    button.MouseButton1Click:Connect(function()
-        state = not state
-        button.Text = name .. ": " .. (state and "ON" or "OFF")
-        callback(state)
-    end)
-
-    callback(default)
-end
-
-makeToggle("Enabled", true, 0, function(val) Aimbot.Settings.Enabled = val end)
-makeToggle("Team Check", false, 1, function(val) Aimbot.Settings.TeamCheck = val end)
-makeToggle("Alive Check", true, 2, function(val) Aimbot.Settings.AliveCheck = val end)
-makeToggle("Wall Check", false, 3, function(val) Aimbot.Settings.WallCheck = val end)
-makeToggle("Show FOV", true, 4, function(val) Aimbot.FOVSettings.Visible = val end)
-
--- FOV SIZE INPUT
-local fovBox = Instance.new("TextBox", panel)
-fovBox.Size = UDim2.new(1, -20, 0, 30)
-fovBox.Position = UDim2.new(0, 10, 0, 220)
-fovBox.PlaceholderText = "FOV Radius (e.g. 150)"
-fovBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-fovBox.TextColor3 = Color3.new(1, 1, 1)
-fovBox.BorderSizePixel = 0
-fovBox.Font = Enum.Font.Gotham
-fovBox.TextScaled = true
-fovBox.ClearTextOnFocus = false
-fovBox.FocusLost:Connect(function()
-    local num = tonumber(fovBox.Text)
-    if num then
-        Aimbot.FOVSettings.Amount = num
-    end
-end)
-
--- SHOW/HIDE PANEL BUTTON
-local showBtn = Instance.new("TextButton", screenGui)
-showBtn.Size = UDim2.new(0, 100, 0, 30)
-showBtn.Position = UDim2.new(0, 10, 1, -40)
-showBtn.Text = "Hide Panel"
-showBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-showBtn.TextColor3 = Color3.new(1, 1, 1)
-showBtn.BorderSizePixel = 0
-showBtn.Font = Enum.Font.GothamBold
-showBtn.TextScaled = true
-
-showBtn.MouseButton1Click:Connect(function()
-    panel.Visible = not panel.Visible
-    showBtn.Text = panel.Visible and "Hide Panel" or "Show Panel"
-end)
-
--- FOV CIRCLE
-Aimbot.FOVCircle = Drawing.new("Circle")
-Aimbot.FOVCircle.Transparency = 0.5
-Aimbot.FOVCircle.Thickness = 2
-Aimbot.FOVCircle.Radius = Aimbot.FOVSettings.Amount
-Aimbot.FOVCircle.Visible = true
-
--- GET CLOSEST
-function GetClosestTarget()
+lockBtn.MouseButton1Click:Connect(function()
+    Aimbot.LockedTarget = nil
     local closest = nil
     local shortestDistance = Aimbot.FOVSettings.Amount or 2000
     local mousePos = UserInputService:GetMouseLocation()
@@ -182,15 +96,25 @@ function GetClosestTarget()
         end
     end
 
-    return closest
-end
+    if closest then
+        Aimbot.LockedTarget = closest
+    end
+end)
 
--- LOOP
+--// FOV CIRCLE
+Aimbot.FOVCircle = Drawing.new("Circle")
+Aimbot.FOVCircle.Transparency = 0.5
+Aimbot.FOVCircle.Thickness = 2
+Aimbot.FOVCircle.Radius = Aimbot.FOVSettings.Amount
+Aimbot.FOVCircle.Visible = true
+
+--// AIMBOT LOOP
 RunService.RenderStepped:Connect(function()
     local mousePos = UserInputService:GetMouseLocation()
+
+    -- Update FOV
     local fov = Aimbot.FOVCircle
     local settings = Aimbot.FOVSettings
-
     fov.Position = Vector2.new(mousePos.X, mousePos.Y)
     fov.Radius = settings.Amount
     fov.Visible = settings.Visible and settings.Enabled
@@ -201,20 +125,24 @@ RunService.RenderStepped:Connect(function()
     fov.Transparency = settings.Transparency
 
     if Running and Aimbot.Settings.Enabled then
-        local target = Aimbot.ManualLocked or GetClosestTarget()
+        local target = Aimbot.LockedTarget
         if target and target.Character then
             local part = target.Character:FindFirstChild(Aimbot.Settings.LockPart)
-            if part then
-                local velocity = part.Velocity * Aimbot.Settings.PredictionVelocity
-                local predictedPos = part.Position + velocity
-                local direction = (predictedPos - Camera.CFrame.Position).Unit
-                local newCFrame = CFrame.new(Camera.CFrame.Position, Camera.CFrame.Position + direction)
-                Camera.CFrame = Camera.CFrame:Lerp(newCFrame, Aimbot.Settings.Smoothness)
-                Aimbot.FOVCircle.Color = settings.LockedColor
+            local hum = target.Character:FindFirstChildOfClass("Humanoid")
+            if not part or not hum or hum.Health <= 0 then
+                Aimbot.LockedTarget = nil
+                fov.Color = settings.Color
+                return
             end
+
+            local velocity = part.Velocity * Aimbot.Settings.PredictionVelocity
+            local predictedPos = part.Position + velocity
+            local direction = (predictedPos - Camera.CFrame.Position).Unit
+            local newCFrame = CFrame.new(Camera.CFrame.Position, Camera.CFrame.Position + direction)
+            Camera.CFrame = Camera.CFrame:Lerp(newCFrame, Aimbot.Settings.Smoothness)
+            fov.Color = settings.LockedColor
         else
-            Aimbot.FOVCircle.Color = settings.Color
-            Aimbot.ManualLocked = nil
+            fov.Color = settings.Color
         end
     end
 end)
