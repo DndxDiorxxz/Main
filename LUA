@@ -1,0 +1,81 @@
+-- Load Rayfield UI
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+-- Create Window
+local Window = Rayfield:CreateWindow({
+    Name = "🌱 Grow a Garden - Auto Planter",
+    LoadingTitle = "Auto Seed Planter",
+    LoadingSubtitle = "by ChatGPT",
+    ConfigurationSaving = {
+        Enabled = false
+    },
+    KeySystem = false
+})
+
+-- Create Tab and Section
+local Tab = Window:CreateTab("Auto", 4483362458)
+local Section = Tab:CreateSection("Planting Tools")
+
+-- State
+local autoPlant = false
+local planted = {}
+
+-- Get all seeds in backpack
+local function getSeeds()
+    local seeds = {}
+    for _, tool in ipairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+        if tool:IsA("Tool") then
+            table.insert(seeds, tool.Name)
+        end
+    end
+    return seeds
+end
+
+-- Get all soil positions
+local function getAllSoil()
+    local soils = {}
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") and obj.Name == "Soil" then
+            table.insert(soils, obj.Position)
+        end
+    end
+    return soils
+end
+
+-- Auto plant loop
+task.spawn(function()
+    while true do
+        if autoPlant then
+            local seeds = getSeeds()
+            local soils = getAllSoil()
+            for _, pos in ipairs(soils) do
+                local key = tostring(pos)
+                if not planted[key] and #seeds > 0 then
+                    for _, seed in ipairs(seeds) do
+                        print("🌱 Planting:", seed, "at", pos)
+                        game:GetService("ReplicatedStorage").GameEvents.Plant_RE:FireServer(pos, seed)
+                        planted[key] = true
+                        break
+                    end
+                end
+            end
+        end
+        task.wait(2) -- Wait to avoid spamming the server
+    end
+end)
+
+-- UI Toggle
+Tab:CreateToggle({
+    Name = "Enable Auto Plant All Seeds",
+    CurrentValue = false,
+    Flag = "AutoPlantAll",
+    Callback = function(Value)
+        autoPlant = Value
+        if not Value then
+            planted = {}
+            print("🔴 Auto Plant disabled.")
+        else
+            print("🟢 Auto Plant enabled.")
+        end
+    end,
+})
