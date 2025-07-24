@@ -20,10 +20,20 @@ local Section = Tab:CreateSection("Planting Tools")
 local autoPlant = false
 local planted = {}
 
--- Get all seeds in backpack
+-- Get all seeds in backpack and equipped tool
 local function getSeeds()
     local seeds = {}
-    for _, tool in ipairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+    local player = game.Players.LocalPlayer
+    local backpack = player.Backpack
+    local character = player.Character
+    -- Check backpack for seeds
+    for _, tool in ipairs(backpack:GetChildren()) do
+        if tool:IsA("Tool") then
+            table.insert(seeds, tool.Name)
+        end
+    end
+    -- Check equipped tool (the one in hand)
+    for _, tool in ipairs(character:GetChildren()) do
         if tool:IsA("Tool") then
             table.insert(seeds, tool.Name)
         end
