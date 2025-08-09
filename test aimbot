@@ -1,16 +1,16 @@
--- 📦 Full Aimbot Settings GUI (Mobile/PC Compatible)
+
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 local Aimbot = getgenv().Aimbot
 
--- ⚙️ Ensure Aimbot is loaded
+
 if not Aimbot or not Aimbot.Settings then
     warn("Aimbot not initialized.")
     return
 end
 
--- GUI Setup
+
 local gui = Instance.new("ScreenGui")
 gui.Name = "AimbotUI"
 gui.ResetOnSpawn = false
@@ -18,7 +18,7 @@ gui.IgnoreGuiInset = true
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- Toggle Button
+
 local toggleBtn = Instance.new("TextButton")
 toggleBtn.Size = UDim2.new(0, 100, 0, 40)
 toggleBtn.Position = UDim2.new(0.02, 0, 0.88, 0)
@@ -29,7 +29,7 @@ toggleBtn.TextSize = 14
 toggleBtn.Text = "Aimbot ⚙️"
 toggleBtn.Parent = gui
 
--- Settings Frame
+
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 250, 0, 310)
 frame.Position = UDim2.new(0.02, 0, 0.55, 0)
@@ -101,7 +101,7 @@ local function makeToggle(yPos, settingKey)
 	end)
 end
 
--- UI Elements
+
 makeLabel("Aimbot Settings", 10)
 
 makeLabel("FOV Radius", 40)
@@ -115,7 +115,7 @@ makeToggle(185, "ThirdPerson")
 makeToggle(220, "TeamCheck")
 makeToggle(255, "WallCheck")
 
--- Reset Settings Button
+
 local reset = Instance.new("TextButton")
 reset.Size = UDim2.new(0, 230, 0, 30)
 reset.Position = UDim2.new(0, 10, 0, 290)
@@ -132,7 +132,7 @@ reset.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Toggle GUI visibility
+
 toggleBtn.MouseButton1Click:Connect(function()
 	frame.Visible = not frame.Visible
 end)
