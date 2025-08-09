@@ -5,7 +5,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
     Name = "🌱 Grow a Garden - Auto Planter",
     LoadingTitle = "Auto Seed Planter",
-    LoadingSubtitle = "by ChatGPT",
+    LoadingSubtitle = "by DIO",
     ConfigurationSaving = {
         Enabled = false
     },
