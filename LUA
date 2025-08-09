@@ -1,7 +1,7 @@
--- Load Rayfield UI
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Create Window
+
 local Window = Rayfield:CreateWindow({
     Name = "🌱 Grow a Garden - Auto Planter",
     LoadingTitle = "Auto Seed Planter",
@@ -12,27 +12,27 @@ local Window = Rayfield:CreateWindow({
     KeySystem = false
 })
 
--- Create Tab and Section
+
 local Tab = Window:CreateTab("Auto", 4483362458)
 local Section = Tab:CreateSection("Planting Tools")
 
--- State
+
 local autoPlant = false
 local planted = {}
 
--- Get all seeds in backpack and equipped tool
+
 local function getSeeds()
     local seeds = {}
     local player = game.Players.LocalPlayer
     local backpack = player.Backpack
     local character = player.Character
-    -- Check backpack for seeds
+    
     for _, tool in ipairs(backpack:GetChildren()) do
         if tool:IsA("Tool") then
             table.insert(seeds, tool.Name)
         end
     end
-    -- Check equipped tool (the one in hand)
+    
     for _, tool in ipairs(character:GetChildren()) do
         if tool:IsA("Tool") then
             table.insert(seeds, tool.Name)
@@ -41,7 +41,7 @@ local function getSeeds()
     return seeds
 end
 
--- Get all soil positions
+
 local function getAllSoil()
     local soils = {}
     for _, obj in ipairs(workspace:GetDescendants()) do
@@ -52,7 +52,7 @@ local function getAllSoil()
     return soils
 end
 
--- Auto plant loop
+
 task.spawn(function()
     while true do
         if autoPlant then
@@ -74,7 +74,7 @@ task.spawn(function()
     end
 end)
 
--- UI Toggle
+
 Tab:CreateToggle({
     Name = "Enable Auto Plant All Seeds",
     CurrentValue = false,
