@@ -1,20 +1,15 @@
---// Cache
-
 local select = select
 local pcall, getgenv, next, Vector2, mathclamp, type, mousemoverel = select(1, pcall, getgenv, next, Vector2.new, math.clamp, type, mousemoverel or (Input and Input.MouseMove))
 
---// Preventing Multiple Processes
 
 pcall(function()
 	getgenv().Aimbot.Functions:Exit()
 end)
 
---// Environment
 
 getgenv().Aimbot = {}
 local Environment = getgenv().Aimbot
 
---// Services
 
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -23,11 +18,9 @@ local Players = game:GetService("Players")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
---// Variables
 
 local RequiredDistance, Typing, Running, Animation, ServiceConnections = 2000, false, false, nil, {}
 
---// Script Settings
 
 Environment.Settings = {
 	Enabled = true,
@@ -56,7 +49,6 @@ Environment.FOVSettings = {
 
 Environment.FOVCircle = Drawing.new("Circle")
 
---// Functions
 
 local function CancelLock()
 	Environment.Locked = nil
@@ -90,7 +82,6 @@ local function GetClosestPlayer()
 	end
 end
 
---// Typing Check
 
 ServiceConnections.TypingStartedConnection = UserInputService.TextBoxFocused:Connect(function()
 	Typing = true
@@ -100,7 +91,6 @@ ServiceConnections.TypingEndedConnection = UserInputService.TextBoxFocusReleased
 	Typing = false
 end)
 
---// Main
 
 local function Load()
 	ServiceConnections.RenderSteppedConnection = RunService.RenderStepped:Connect(function()
@@ -192,7 +182,6 @@ local function Load()
 	end)
 end
 
---// Functions
 
 Environment.Functions = {}
 
@@ -248,7 +237,6 @@ end
 
 Load()
 
--- UNIVERSAL ESP
 
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -277,11 +265,11 @@ end
 
 
 local function applyESP(player)
-    if player == LocalPlayer then return end -- Ignore local player
+    if player == LocalPlayer then return end 
 
     
     player.CharacterAdded:Connect(function(character)
-        task.wait(0.5) -- Small delay to ensure the character loads
+        task.wait(0.5) 
         createESP(character)
     end)
 
@@ -296,5 +284,5 @@ for _, player in ipairs(Players:GetPlayers()) do
     applyESP(player)
 end
 
-Players.PlayerAdded:Connect(applyESP) -- Detect new players joining
+Players.PlayerAdded:Connect(applyESP) 
 
