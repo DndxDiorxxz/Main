@@ -1,20 +1,15 @@
---// Cache
-
 local select = select
 local pcall, getgenv, next, Vector2, mathclamp, type, mousemoverel = select(1, pcall, getgenv, next, Vector2.new, math.clamp, type, mousemoverel or (Input and Input.MouseMove))
 
---// Preventing Multiple Processes
 
 pcall(function()
 	getgenv().Aimbot.Functions:Exit()
 end)
 
---// Environment
 
 getgenv().Aimbot = {}
 local Environment = getgenv().Aimbot
 
---// Services
 
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -23,11 +18,9 @@ local Players = game:GetService("Players")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
---// Variables
 
 local RequiredDistance, Typing, Running, Animation, ServiceConnections = 2000, false, false, nil, {}
 
---// Script Settings
 
 Environment.Settings = {
 	Enabled = true,
@@ -58,7 +51,6 @@ Environment.FOVSettings = {
 
 Environment.FOVCircle = Drawing.new("Circle")
 
---// Functions
 
 local function CancelLock()
 	Environment.Locked = nil
@@ -92,7 +84,6 @@ local function GetClosestPlayer()
 	end
 end
 
---// Typing Check
 
 ServiceConnections.TypingStartedConnection = UserInputService.TextBoxFocused:Connect(function()
 	Typing = true
@@ -102,7 +93,6 @@ ServiceConnections.TypingEndedConnection = UserInputService.TextBoxFocusReleased
 	Typing = false
 end)
 
---// Main
 
 local function Load()
 	ServiceConnections.RenderSteppedConnection = RunService.RenderStepped:Connect(function()
@@ -125,7 +115,7 @@ local function Load()
 			if Environment.Locked and Environment.Locked.Character and Environment.Locked.Character:FindFirstChild(Environment.Settings.LockPart) then
 				local humanoid = Environment.Locked.Character:FindFirstChildOfClass("Humanoid")
 
-				-- ✅ Unlock if dead
+			
 				if humanoid and humanoid.Health <= 0 then
 					CancelLock()
 					return
@@ -143,7 +133,7 @@ local function Load()
 						(Vector.Y - UserInputService:GetMouseLocation().Y) * Environment.Settings.ThirdPersonSensitivity
 					)
 				else
-					-- ✅ Smooth camera movement
+					
 					local direction = (predictedPosition - Camera.CFrame.Position).Unit
 					local newCFrame = CFrame.new(Camera.CFrame.Position, Camera.CFrame.Position + direction)
 					Camera.CFrame = Camera.CFrame:Lerp(newCFrame, Environment.Settings.Smoothness)
@@ -197,7 +187,6 @@ local function Load()
 	end)
 end
 
---// Functions
 
 Environment.Functions = {}
 
