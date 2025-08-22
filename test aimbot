@@ -1,138 +1,358 @@
+-- Aimbot Script for Executors
+-- Made for Sandbox Games
+-- Press Q to toggle
 
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local player = Players.LocalPlayer
-local Aimbot = getgenv().Aimbot
-
-
-if not Aimbot or not Aimbot.Settings then
-    warn("Aimbot not initialized.")
+if getgenv().AimbotLoaded then
+    warn("Aimbot is already loaded!")
     return
 end
 
+getgenv().AimbotLoaded = true
 
-local gui = Instance.new("ScreenGui")
-gui.Name = "AimbotUI"
-gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = true
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-gui.Parent = player:WaitForChild("PlayerGui")
+-- Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
 
+-- Configuration
+getgenv().AimbotConfig = {
+    Enabled = true,
+    TeamCheck = false,
+    AliveCheck = true,
+    WallCheck = false,
+    TriggerKey = "Q",
+    Toggle = true,
+    Prediction = 0.12,
+    Smoothness = 0.3,
+    FOV = 100,
+    LockPart = "Head",
+    VisibleCheck = true,
+    MaxDistance = 1000
+}
 
-local toggleBtn = Instance.new("TextButton")
-toggleBtn.Size = UDim2.new(0, 100, 0, 40)
-toggleBtn.Position = UDim2.new(0.02, 0, 0.88, 0)
-toggleBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-toggleBtn.TextColor3 = Color3.new(1, 1, 1)
-toggleBtn.Font = Enum.Font.GothamBold
-toggleBtn.TextSize = 14
-toggleBtn.Text = "Aimbot ⚙️"
-toggleBtn.Parent = gui
+-- States
+local Target = nil
+local TargetPart = nil
+local Active = false
+local Connections = {}
 
+-- UI Setup
+local function CreateUI()
+    if getgenv().AimbotUI then
+        getgenv().AimbotUI:Destroy()
+    end
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 250, 0, 310)
-frame.Position = UDim2.new(0.02, 0, 0.55, 0)
-frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-frame.Visible = false
-frame.Parent = gui
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "AimbotUI"
+    ScreenGui.Parent = game:GetService("CoreGui")
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-Instance.new("UICorner", frame)
+    local Frame = Instance.new("Frame")
+    Frame.Size = UDim2.new(0, 200, 0, 250)
+    Frame.Position = UDim2.new(0, 10, 0, 10)
+    Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    Frame.BorderSizePixel = 0
+    Frame.Parent = ScreenGui
 
-local function makeLabel(text, yPos)
-	local label = Instance.new("TextLabel")
-	label.Size = UDim2.new(1, -20, 0, 20)
-	label.Position = UDim2.new(0, 10, 0, yPos)
-	label.BackgroundTransparency = 1
-	label.Text = text
-	label.TextColor3 = Color3.new(1, 1, 1)
-	label.Font = Enum.Font.Gotham
-	label.TextSize = 14
-	label.TextXAlignment = Enum.TextXAlignment.Left
-	label.Parent = frame
-	return label
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 8)
+    Corner.Parent = Frame
+
+    local Title = Instance.new("TextLabel")
+    Title.Text = "AIMBOT MENU"
+    Title.Size = UDim2.new(1, 0, 0, 30)
+    Title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.Font = Enum.Font.GothamBold
+    Title.Parent = Frame
+
+    local Toggle = Instance.new("TextButton")
+    Toggle.Text = "ENABLED: " .. tostring(AimbotConfig.Enabled)
+    Toggle.Size = UDim2.new(0.9, 0, 0, 30)
+    Toggle.Position = UDim2.new(0.05, 0, 0, 40)
+    Toggle.BackgroundColor3 = AimbotConfig.Enabled and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(170, 0, 0)
+    Toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Toggle.Font = Enum.Font.Gotham
+    Toggle.Parent = Frame
+
+    Toggle.MouseButton1Click:Connect(function()
+        AimbotConfig.Enabled = not AimbotConfig.Enabled
+        Toggle.Text = "ENABLED: " .. tostring(AimbotConfig.Enabled)
+        Toggle.BackgroundColor3 = AimbotConfig.Enabled and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(170, 0, 0)
+    end)
+
+    local FOVSlider = Instance.new("TextLabel")
+    FOVSlider.Text = "FOV: " .. AimbotConfig.FOV
+    FOVSlider.Size = UDim2.new(0.9, 0, 0, 20)
+    FOVSlider.Position = UDim2.new(0.05, 0, 0, 80)
+    FOVSlider.BackgroundTransparency = 1
+    FOVSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
+    FOVSlider.Font = Enum.Font.Gotham
+    FOVSlider.Parent = Frame
+
+    local SmoothSlider = Instance.new("TextLabel")
+    SmoothSlider.Text = "SMOOTH: " .. string.format("%.2f", AimbotConfig.Smoothness)
+    SmoothSlider.Size = UDim2.new(0.9, 0, 0, 20)
+    SmoothSlider.Position = UDim2.new(0.05, 0, 0, 110)
+    SmoothSlider.BackgroundTransparency = 1
+    SmoothSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SmoothSlider.Font = Enum.Font.Gotham
+    SmoothSlider.Parent = Frame
+
+    local PredSlider = Instance.new("TextLabel")
+    PredSlider.Text = "PRED: " .. string.format("%.3f", AimbotConfig.Prediction)
+    PredSlider.Size = UDim2.new(0.9, 0, 0, 20)
+    PredSlider.Position = UDim2.new(0.05, 0, 0, 140)
+    PredSlider.BackgroundTransparency = 1
+    PredSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
+    PredSlider.Font = Enum.Font.Gotham
+    PredSlider.Parent = Frame
+
+    local Status = Instance.new("TextLabel")
+    Status.Text = "STATUS: INACTIVE"
+    Status.Size = UDim2.new(0.9, 0, 0, 20)
+    Status.Position = UDim2.new(0.05, 0, 0, 170)
+    Status.BackgroundTransparency = 1
+    Status.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Status.Font = Enum.Font.Gotham
+    Status.Parent = Frame
+
+    local CloseBtn = Instance.new("TextButton")
+    CloseBtn.Text = "CLOSE"
+    CloseBtn.Size = UDim2.new(0.9, 0, 0, 30)
+    CloseBtn.Position = UDim2.new(0.05, 0, 0, 200)
+    CloseBtn.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+    CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    CloseBtn.Font = Enum.Font.Gotham
+    CloseBtn.Parent = Frame
+
+    CloseBtn.MouseButton1Click:Connect(function()
+        ScreenGui:Destroy()
+    end)
+
+    getgenv().AimbotUI = ScreenGui
+    getgenv().UpdateStatus = function(text)
+        Status.Text = "STATUS: " .. text
+    end
+
+    return ScreenGui
 end
 
-local function makeSlider(yPos, min, max, settingKey)
-	local bar = Instance.new("TextButton")
-	bar.Size = UDim2.new(0, 230, 0, 10)
-	bar.Position = UDim2.new(0, 10, 0, yPos)
-	bar.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-	bar.Text = ""
-	bar.AutoButtonColor = false
-	bar.Parent = frame
+-- FOV Circle Drawing
+local FOVCircle = Drawing.new("Circle")
+FOVCircle.Visible = true
+FOVCircle.Radius = AimbotConfig.FOV
+FOVCircle.Color = Color3.fromRGB(255, 255, 255)
+FOVCircle.Thickness = 2
+FOVCircle.Transparency = 1
+FOVCircle.Filled = false
 
-	local fill = Instance.new("Frame")
-	fill.Size = UDim2.new((Aimbot.Settings[settingKey] or min) / max, 0, 1, 0)
-	fill.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
-	fill.Parent = bar
-
-	bar.MouseButton1Down:Connect(function()
-		local conn
-		conn = UserInputService.InputChanged:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseMovement then
-				local x = math.clamp((input.Position.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
-				local val = math.floor(min + (max - min) * x)
-				fill.Size = UDim2.new(x, 0, 1, 0)
-				Aimbot.Settings[settingKey] = val
-				bar.Text = settingKey .. ": " .. val
-			end
-		end)
-		UserInputService.InputEnded:Wait()
-		conn:Disconnect()
-	end)
+-- Functions
+local function GetValidParts(character)
+    if not character then return {} end
+    
+    local parts = {}
+    local validNames = {
+        "Head", "UpperTorso", "LowerTorso", "HumanoidRootPart",
+        "LeftUpperArm", "RightUpperArm", "LeftUpperLeg", "RightUpperLeg",
+        "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"
+    }
+    
+    for _, name in ipairs(validNames) do
+        local part = character:FindFirstChild(name)
+        if part then
+            table.insert(parts, part)
+        end
+    end
+    
+    if #parts == 0 then
+        for _, child in ipairs(character:GetChildren()) do
+            if child:IsA("BasePart") and child.Size.Magnitude > 0.5 then
+                table.insert(parts, child)
+            end
+        end
+    end
+    
+    return parts
 end
 
-local function makeToggle(yPos, settingKey)
-	local button = Instance.new("TextButton")
-	button.Size = UDim2.new(0, 230, 0, 30)
-	button.Position = UDim2.new(0, 10, 0, yPos)
-	button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-	button.TextColor3 = Color3.fromRGB(255, 255, 255)
-	button.Font = Enum.Font.Gotham
-	button.TextSize = 14
-	button.Text = settingKey .. ": " .. tostring(Aimbot.Settings[settingKey])
-	button.Parent = frame
-
-	button.MouseButton1Click:Connect(function()
-		local new = not Aimbot.Settings[settingKey]
-		Aimbot.Settings[settingKey] = new
-		button.Text = settingKey .. ": " .. tostring(new)
-	end)
+local function FindTargetPart(character)
+    local part = character:FindFirstChild(AimbotConfig.LockPart)
+    if part then return part end
+    
+    local fallbackParts = {"Head", "UpperTorso", "HumanoidRootPart", "Torso"}
+    for _, partName in ipairs(fallbackParts) do
+        part = character:FindFirstChild(partName)
+        if part then return part end
+    end
+    
+    local parts = GetValidParts(character)
+    return parts[1]
 end
 
+local function IsVisible(part)
+    if not AimbotConfig.WallCheck then return true end
+    
+    local origin = Camera.CFrame.Position
+    local direction = (part.Position - origin).Unit
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {part.Parent, LocalPlayer.Character}
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    
+    local raycastResult = workspace:Raycast(origin, direction * AimbotConfig.MaxDistance, raycastParams)
+    return not raycastResult or raycastResult.Instance == part
+end
 
-makeLabel("Aimbot Settings", 10)
+local function FindClosestPlayer()
+    local closestDistance = AimbotConfig.FOV
+    local closestPlayer, closestPart = nil, nil
+    
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player == LocalPlayer then continue end
+        if not player.Character then continue end
+        
+        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+        if not humanoid or (AimbotConfig.AliveCheck and humanoid.Health <= 0) then continue end
+        
+        if AimbotConfig.TeamCheck and player.Team and LocalPlayer.Team and player.Team == LocalPlayer.Team then continue end
+        
+        local targetPart = FindTargetPart(player.Character)
+        if not targetPart then continue end
+        
+        if not IsVisible(targetPart) then continue end
+        
+        local screenPos, onScreen = Camera:WorldToViewportPoint(targetPart.Position)
+        if onScreen then
+            local mousePos = UserInputService:GetMouseLocation()
+            local distance = (Vector2.new(mousePos.X, mousePos.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
+            
+            if distance < closestDistance then
+                closestDistance = distance
+                closestPlayer = player
+                closestPart = targetPart
+            end
+        end
+    end
+    
+    return closestPlayer, closestPart
+end
 
-makeLabel("FOV Radius", 40)
-makeSlider(65, 10, 360, "Amount")
+local function AimAtTarget()
+    if not AimbotConfig.Enabled or not Active or not Target or not TargetPart then return end
+    if not Target.Character or TargetPart.Parent ~= Target.Character then return end
+    
+    local humanoid = Target.Character:FindFirstChildOfClass("Humanoid")
+    if AimbotConfig.AliveCheck and (not humanoid or humanoid.Health <= 0) then
+        Target, TargetPart = nil, nil
+        return
+    end
+    
+    if not IsVisible(TargetPart) then
+        Target, TargetPart = nil, nil
+        return
+    end
+    
+    local predictedPosition = TargetPart.Position + (TargetPart.Velocity * AimbotConfig.Prediction)
+    local direction = (predictedPosition - Camera.CFrame.Position).Unit
+    local newCFrame = CFrame.new(Camera.CFrame.Position, Camera.CFrame.Position + direction)
+    
+    Camera.CFrame = Camera.CFrame:Lerp(newCFrame, AimbotConfig.Smoothness)
+    
+    if getgenv().UpdateStatus then
+        getgenv().UpdateStatus("LOCKED: " .. Target.Name)
+    end
+end
 
-makeLabel("Sensitivity", 95)
-makeSlider(120, 0, 3, "Sensitivity")
-
-makeToggle(150, "Enabled")
-makeToggle(185, "ThirdPerson")
-makeToggle(220, "TeamCheck")
-makeToggle(255, "WallCheck")
-
-
-local reset = Instance.new("TextButton")
-reset.Size = UDim2.new(0, 230, 0, 30)
-reset.Position = UDim2.new(0, 10, 0, 290)
-reset.BackgroundColor3 = Color3.fromRGB(120, 40, 40)
-reset.TextColor3 = Color3.new(1, 1, 1)
-reset.Font = Enum.Font.GothamBold
-reset.TextSize = 14
-reset.Text = "Reset Settings"
-reset.Parent = frame
-
-reset.MouseButton1Click:Connect(function()
-	if Aimbot.Functions and Aimbot.Functions.ResetSettings then
-		Aimbot.Functions.ResetSettings()
-	end
+-- Input Handling
+Connections.InputBegan = UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode[AimbotConfig.TriggerKey] then
+        if AimbotConfig.Toggle then
+            Active = not Active
+            if not Active then
+                Target, TargetPart = nil, nil
+                if getgenv().UpdateStatus then
+                    getgenv().UpdateStatus("INACTIVE")
+                end
+            else
+                Target, TargetPart = FindClosestPlayer()
+                if getgenv().UpdateStatus then
+                    getgenv().UpdateStatus(Target and "SEARCHING" or "NO TARGET")
+                end
+            end
+        else
+            Active = true
+            Target, TargetPart = FindClosestPlayer()
+            if getgenv().UpdateStatus then
+                getgenv().UpdateStatus(Target and "SEARCHING" or "NO TARGET")
+            end
+        end
+    end
 end)
 
-
-toggleBtn.MouseButton1Click:Connect(function()
-	frame.Visible = not frame.Visible
+Connections.InputEnded = UserInputService.InputEnded:Connect(function(input)
+    if not AimbotConfig.Toggle and input.KeyCode == Enum.KeyCode[AimbotConfig.TriggerKey] then
+        Active = false
+        Target, TargetPart = nil, nil
+        if getgenv().UpdateStatus then
+            getgenv().UpdateStatus("INACTIVE")
+        end
+    end
 end)
+
+-- Main Loop
+Connections.RenderStepped = RunService.RenderStepped:Connect(function()
+    -- Update FOV Circle
+    FOVCircle.Radius = AimbotConfig.FOV
+    FOVCircle.Position = UserInputService:GetMouseLocation()
+    FOVCircle.Visible = AimbotConfig.Enabled
+    
+    if Active and AimbotConfig.Enabled then
+        if not Target or not TargetPart then
+            Target, TargetPart = FindClosestPlayer()
+        else
+            AimAtTarget()
+        end
+    end
+end)
+
+-- Auto-cleanup when player leaves
+Connections.PlayerRemoving = Players.PlayerRemoving:Connect(function(player)
+    if player == Target then
+        Target, TargetPart = nil, nil
+    end
+end)
+
+-- Create UI
+CreateUI()
+
+-- Notifications
+warn("Aimbot loaded successfully!")
+warn("Press " .. AimbotConfig.TriggerKey .. " to toggle aimbot")
+warn("UI created in CoreGui")
+
+-- Unload function
+getgenv().UnloadAimbot = function()
+    getgenv().AimbotLoaded = false
+    
+    for _, connection in pairs(Connections) do
+        pcall(function() connection:Disconnect() end)
+    end
+    
+    if FOVCircle then
+        pcall(function() FOVCircle:Remove() end)
+    end
+    
+    if getgenv().AimbotUI then
+        pcall(function() getgenv().AimbotUI:Destroy() end)
+    end
+    
+    getgenv().AimbotConfig = nil
+    getgenv().UnloadAimbot = nil
+    
+    warn("Aimbot unloaded successfully!")
+end
+
+-- Auto-execute commands
+warn("Type 'UnloadAimbot()' in console to unload")
