@@ -1,6 +1,4 @@
--- Aimbot Script for Executors
--- Made for Sandbox Games
--- Press Q to toggle
+
 
 if getgenv().AimbotLoaded then
     warn("Aimbot is already loaded!")
