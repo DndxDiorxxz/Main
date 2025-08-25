@@ -1,356 +1,278 @@
+local select = select
+local pcall, getgenv, next, Vector2, mathclamp, type, mousemoverel = select(1, pcall, getgenv, next, Vector2.new, math.clamp, type, mousemoverel or (Input and Input.MouseMove))
 
+-- Clean exit if already running
+pcall(function()
+    if getgenv().Aimbot and getgenv().Aimbot.Functions then
+        getgenv().Aimbot.Functions:Exit()
+    end
+end)
 
-if getgenv().AimbotLoaded then
-    warn("Aimbot is already loaded!")
-    return
-end
+getgenv().Aimbot = {}
+local Environment = getgenv().Aimbot
 
-getgenv().AimbotLoaded = true
-
--- Services
-local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
--- Configuration
-getgenv().AimbotConfig = {
+Environment.Settings = {
     Enabled = true,
     TeamCheck = false,
     AliveCheck = true,
     WallCheck = false,
+    Sensitivity = 0,
+    ThirdPerson = false,
+    ThirdPersonSensitivity = 3,
     TriggerKey = "Q",
     Toggle = true,
-    Prediction = 0.12,
-    Smoothness = 0.3,
-    FOV = 100,
     LockPart = "Head",
-    VisibleCheck = true,
-    MaxDistance = 1000
+    PredictionVelocity = 0.120,
+    Smoothness = 0.3
 }
 
--- States
-local Target = nil
-local TargetPart = nil
-local Active = false
-local Connections = {}
+Environment.FOVSettings = {
+    Enabled = true,
+    Visible = false,
+    Amount = 200,
+    Color = Color3.fromRGB(255, 255, 255),
+    LockedColor = Color3.fromRGB(255, 70, 70),
+    Transparency = 0.5,
+    Sides = 60,
+    Thickness = 3,
+    Filled = false
+}
 
--- UI Setup
-local function CreateUI()
-    if getgenv().AimbotUI then
-        getgenv().AimbotUI:Destroy()
-    end
+Environment.FOVCircle = Drawing.new("Circle")
 
-    local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "AimbotUI"
-    ScreenGui.Parent = game:GetService("CoreGui")
-    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-    local Frame = Instance.new("Frame")
-    Frame.Size = UDim2.new(0, 200, 0, 250)
-    Frame.Position = UDim2.new(0, 10, 0, 10)
-    Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    Frame.BorderSizePixel = 0
-    Frame.Parent = ScreenGui
-
-    local Corner = Instance.new("UICorner")
-    Corner.CornerRadius = UDim.new(0, 8)
-    Corner.Parent = Frame
-
-    local Title = Instance.new("TextLabel")
-    Title.Text = "AIMBOT MENU"
-    Title.Size = UDim2.new(1, 0, 0, 30)
-    Title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Title.Font = Enum.Font.GothamBold
-    Title.Parent = Frame
-
-    local Toggle = Instance.new("TextButton")
-    Toggle.Text = "ENABLED: " .. tostring(AimbotConfig.Enabled)
-    Toggle.Size = UDim2.new(0.9, 0, 0, 30)
-    Toggle.Position = UDim2.new(0.05, 0, 0, 40)
-    Toggle.BackgroundColor3 = AimbotConfig.Enabled and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(170, 0, 0)
-    Toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Toggle.Font = Enum.Font.Gotham
-    Toggle.Parent = Frame
-
-    Toggle.MouseButton1Click:Connect(function()
-        AimbotConfig.Enabled = not AimbotConfig.Enabled
-        Toggle.Text = "ENABLED: " .. tostring(AimbotConfig.Enabled)
-        Toggle.BackgroundColor3 = AimbotConfig.Enabled and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(170, 0, 0)
-    end)
-
-    local FOVSlider = Instance.new("TextLabel")
-    FOVSlider.Text = "FOV: " .. AimbotConfig.FOV
-    FOVSlider.Size = UDim2.new(0.9, 0, 0, 20)
-    FOVSlider.Position = UDim2.new(0.05, 0, 0, 80)
-    FOVSlider.BackgroundTransparency = 1
-    FOVSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
-    FOVSlider.Font = Enum.Font.Gotham
-    FOVSlider.Parent = Frame
-
-    local SmoothSlider = Instance.new("TextLabel")
-    SmoothSlider.Text = "SMOOTH: " .. string.format("%.2f", AimbotConfig.Smoothness)
-    SmoothSlider.Size = UDim2.new(0.9, 0, 0, 20)
-    SmoothSlider.Position = UDim2.new(0.05, 0, 0, 110)
-    SmoothSlider.BackgroundTransparency = 1
-    SmoothSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
-    SmoothSlider.Font = Enum.Font.Gotham
-    SmoothSlider.Parent = Frame
-
-    local PredSlider = Instance.new("TextLabel")
-    PredSlider.Text = "PRED: " .. string.format("%.3f", AimbotConfig.Prediction)
-    PredSlider.Size = UDim2.new(0.9, 0, 0, 20)
-    PredSlider.Position = UDim2.new(0.05, 0, 0, 140)
-    PredSlider.BackgroundTransparency = 1
-    PredSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
-    PredSlider.Font = Enum.Font.Gotham
-    PredSlider.Parent = Frame
-
-    local Status = Instance.new("TextLabel")
-    Status.Text = "STATUS: INACTIVE"
-    Status.Size = UDim2.new(0.9, 0, 0, 20)
-    Status.Position = UDim2.new(0.05, 0, 0, 170)
-    Status.BackgroundTransparency = 1
-    Status.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Status.Font = Enum.Font.Gotham
-    Status.Parent = Frame
-
-    local CloseBtn = Instance.new("TextButton")
-    CloseBtn.Text = "CLOSE"
-    CloseBtn.Size = UDim2.new(0.9, 0, 0, 30)
-    CloseBtn.Position = UDim2.new(0.05, 0, 0, 200)
-    CloseBtn.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
-    CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    CloseBtn.Font = Enum.Font.Gotham
-    CloseBtn.Parent = Frame
-
-    CloseBtn.MouseButton1Click:Connect(function()
-        ScreenGui:Destroy()
-    end)
-
-    getgenv().AimbotUI = ScreenGui
-    getgenv().UpdateStatus = function(text)
-        Status.Text = "STATUS: " .. text
-    end
-
-    return ScreenGui
+local function CancelLock()
+    Environment.Locked = nil
+    Environment.LockedPart = nil
+    Environment.FOVCircle.Color = Environment.FOVSettings.Color
 end
 
--- FOV Circle Drawing
-local FOVCircle = Drawing.new("Circle")
-FOVCircle.Visible = true
-FOVCircle.Radius = AimbotConfig.FOV
-FOVCircle.Color = Color3.fromRGB(255, 255, 255)
-FOVCircle.Thickness = 2
-FOVCircle.Transparency = 1
-FOVCircle.Filled = false
-
--- Functions
-local function GetValidParts(character)
-    if not character then return {} end
-    
-    local parts = {}
-    local validNames = {
-        "Head", "UpperTorso", "LowerTorso", "HumanoidRootPart",
-        "LeftUpperArm", "RightUpperArm", "LeftUpperLeg", "RightUpperLeg",
-        "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"
-    }
-    
-    for _, name in ipairs(validNames) do
-        local part = character:FindFirstChild(name)
-        if part then
-            table.insert(parts, part)
-        end
-    end
-    
-    if #parts == 0 then
-        for _, child in ipairs(character:GetChildren()) do
-            if child:IsA("BasePart") and child.Size.Magnitude > 0.5 then
-                table.insert(parts, child)
-            end
-        end
-    end
-    
-    return parts
-end
-
-local function FindTargetPart(character)
-    local part = character:FindFirstChild(AimbotConfig.LockPart)
+local function FindPartInCharacter(character, partName)
+    -- Try direct search first
+    local part = character:FindFirstChild(partName)
     if part then return part end
     
-    local fallbackParts = {"Head", "UpperTorso", "HumanoidRootPart", "Torso"}
-    for _, partName in ipairs(fallbackParts) do
-        part = character:FindFirstChild(partName)
-        if part then return part end
-    end
-    
-    local parts = GetValidParts(character)
-    return parts[1]
-end
-
-local function IsVisible(part)
-    if not AimbotConfig.WallCheck then return true end
-    
-    local origin = Camera.CFrame.Position
-    local direction = (part.Position - origin).Unit
-    local raycastParams = RaycastParams.new()
-    raycastParams.FilterDescendantsInstances = {part.Parent, LocalPlayer.Character}
-    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-    
-    local raycastResult = workspace:Raycast(origin, direction * AimbotConfig.MaxDistance, raycastParams)
-    return not raycastResult or raycastResult.Instance == part
-end
-
-local function FindClosestPlayer()
-    local closestDistance = AimbotConfig.FOV
-    local closestPlayer, closestPart = nil, nil
-    
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player == LocalPlayer then continue end
-        if not player.Character then continue end
-        
-        local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-        if not humanoid or (AimbotConfig.AliveCheck and humanoid.Health <= 0) then continue end
-        
-        if AimbotConfig.TeamCheck and player.Team and LocalPlayer.Team and player.Team == LocalPlayer.Team then continue end
-        
-        local targetPart = FindTargetPart(player.Character)
-        if not targetPart then continue end
-        
-        if not IsVisible(targetPart) then continue end
-        
-        local screenPos, onScreen = Camera:WorldToViewportPoint(targetPart.Position)
-        if onScreen then
-            local mousePos = UserInputService:GetMouseLocation()
-            local distance = (Vector2.new(mousePos.X, mousePos.Y) - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
-            
-            if distance < closestDistance then
-                closestDistance = distance
-                closestPlayer = player
-                closestPart = targetPart
-            end
+    -- Try case-insensitive search for any BasePart
+    for _, child in ipairs(character:GetChildren()) do
+        if child:IsA("BasePart") and child.Name:lower() == partName:lower() then
+            return child
         end
     end
     
-    return closestPlayer, closestPart
+    return nil
 end
 
-local function AimAtTarget()
-    if not AimbotConfig.Enabled or not Active or not Target or not TargetPart then return end
-    if not Target.Character or TargetPart.Parent ~= Target.Character then return end
+local function GetTargetPart(character)
+    -- Always try to use the configured LockPart first
+    local targetPart = FindPartInCharacter(character, Environment.Settings.LockPart)
     
-    local humanoid = Target.Character:FindFirstChildOfClass("Humanoid")
-    if AimbotConfig.AliveCheck and (not humanoid or humanoid.Health <= 0) then
-        Target, TargetPart = nil, nil
-        return
+    -- If not found, try common alternatives
+    if not targetPart then
+        local potentialParts = {"Head", "HumanoidRootPart", "UpperTorso", "Torso"}
+        for _, partName in ipairs(potentialParts) do
+            targetPart = FindPartInCharacter(character, partName)
+            if targetPart then break end
+        end
     end
     
-    if not IsVisible(TargetPart) then
-        Target, TargetPart = nil, nil
-        return
-    end
-    
-    local predictedPosition = TargetPart.Position + (TargetPart.Velocity * AimbotConfig.Prediction)
-    local direction = (predictedPosition - Camera.CFrame.Position).Unit
-    local newCFrame = CFrame.new(Camera.CFrame.Position, Camera.CFrame.Position + direction)
-    
-    Camera.CFrame = Camera.CFrame:Lerp(newCFrame, AimbotConfig.Smoothness)
-    
-    if getgenv().UpdateStatus then
-        getgenv().UpdateStatus("LOCKED: " .. Target.Name)
-    end
+    return targetPart
 end
 
--- Input Handling
-Connections.InputBegan = UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode[AimbotConfig.TriggerKey] then
-        if AimbotConfig.Toggle then
-            Active = not Active
-            if not Active then
-                Target, TargetPart = nil, nil
-                if getgenv().UpdateStatus then
-                    getgenv().UpdateStatus("INACTIVE")
+local function GetClosestPlayer()
+    if not Environment.Locked then
+        RequiredDistance = Environment.FOVSettings.Enabled and Environment.FOVSettings.Amount or 2000
+
+        for _, v in ipairs(Players:GetPlayers()) do
+            if v ~= LocalPlayer and v.Character then
+                local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+                if not humanoid or humanoid.Health <= 0 then continue end
+                
+                if Environment.Settings.TeamCheck and v.Team == LocalPlayer.Team then continue end
+                
+                local targetPart = GetTargetPart(v.Character)
+                if not targetPart then continue end
+                
+                if Environment.Settings.WallCheck then
+                    local ignoreList = {v.Character, LocalPlayer.Character, Camera}
+                    local obscuringParts = Camera:GetPartsObscuringTarget({targetPart.Position}, ignoreList)
+                    if #obscuringParts > 0 then continue end
                 end
-            else
-                Target, TargetPart = FindClosestPlayer()
-                if getgenv().UpdateStatus then
-                    getgenv().UpdateStatus(Target and "SEARCHING" or "NO TARGET")
+
+                local Vector, OnScreen = Camera:WorldToViewportPoint(targetPart.Position)
+                if not OnScreen then continue end
+                
+                local mousePos = Vector2(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
+                local targetPos = Vector2(Vector.X, Vector.Y)
+                local Distance = (mousePos - targetPos).Magnitude
+
+                if Distance < RequiredDistance then
+                    RequiredDistance = Distance
+                    Environment.Locked = v
+                    Environment.LockedPart = targetPart
                 end
             end
-        else
-            Active = true
-            Target, TargetPart = FindClosestPlayer()
-            if getgenv().UpdateStatus then
-                getgenv().UpdateStatus(Target and "SEARCHING" or "NO TARGET")
-            end
         end
-    end
-end)
-
-Connections.InputEnded = UserInputService.InputEnded:Connect(function(input)
-    if not AimbotConfig.Toggle and input.KeyCode == Enum.KeyCode[AimbotConfig.TriggerKey] then
-        Active = false
-        Target, TargetPart = nil, nil
-        if getgenv().UpdateStatus then
-            getgenv().UpdateStatus("INACTIVE")
+    elseif Environment.Locked and Environment.Locked.Character and Environment.LockedPart then
+        if not Environment.LockedPart.Parent then
+            CancelLock()
+            return
         end
-    end
-end)
-
--- Main Loop
-Connections.RenderStepped = RunService.RenderStepped:Connect(function()
-    -- Update FOV Circle
-    FOVCircle.Radius = AimbotConfig.FOV
-    FOVCircle.Position = UserInputService:GetMouseLocation()
-    FOVCircle.Visible = AimbotConfig.Enabled
-    
-    if Active and AimbotConfig.Enabled then
-        if not Target or not TargetPart then
-            Target, TargetPart = FindClosestPlayer()
-        else
-            AimAtTarget()
+        
+        local Vector = Camera:WorldToViewportPoint(Environment.LockedPart.Position)
+        local mousePos = Vector2(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
+        local targetPos = Vector2(Vector.X, Vector.Y)
+        
+        if (mousePos - targetPos).Magnitude > RequiredDistance then
+            CancelLock()
         end
+    else
+        CancelLock()
     end
-end)
-
--- Auto-cleanup when player leaves
-Connections.PlayerRemoving = Players.PlayerRemoving:Connect(function(player)
-    if player == Target then
-        Target, TargetPart = nil, nil
-    end
-end)
-
--- Create UI
-CreateUI()
-
--- Notifications
-warn("Aimbot loaded successfully!")
-warn("Press " .. AimbotConfig.TriggerKey .. " to toggle aimbot")
-warn("UI created in CoreGui")
-
--- Unload function
-getgenv().UnloadAimbot = function()
-    getgenv().AimbotLoaded = false
-    
-    for _, connection in pairs(Connections) do
-        pcall(function() connection:Disconnect() end)
-    end
-    
-    if FOVCircle then
-        pcall(function() FOVCircle:Remove() end)
-    end
-    
-    if getgenv().AimbotUI then
-        pcall(function() getgenv().AimbotUI:Destroy() end)
-    end
-    
-    getgenv().AimbotConfig = nil
-    getgenv().UnloadAimbot = nil
-    
-    warn("Aimbot unloaded successfully!")
 end
 
--- Auto-execute commands
-warn("Type 'UnloadAimbot()' in console to unload")
+ServiceConnections = {}
+ServiceConnections.TypingStartedConnection = UserInputService.TextBoxFocused:Connect(function()
+    Typing = true
+end)
+
+ServiceConnections.TypingEndedConnection = UserInputService.TextBoxFocusReleased:Connect(function()
+    Typing = false
+end)
+
+local function Load()
+    ServiceConnections.RenderSteppedConnection = RunService.RenderStepped:Connect(function()
+        if Environment.FOVSettings.Enabled and Environment.Settings.Enabled then
+            Environment.FOVCircle.Radius = Environment.FOVSettings.Amount
+            Environment.FOVCircle.Thickness = Environment.FOVSettings.Thickness
+            Environment.FOVCircle.Filled = Environment.FOVSettings.Filled
+            Environment.FOVCircle.NumSides = Environment.FOVSettings.Sides
+            Environment.FOVCircle.Color = Environment.FOVSettings.Color
+            Environment.FOVCircle.Transparency = Environment.FOVSettings.Transparency
+            Environment.FOVCircle.Visible = Environment.FOVSettings.Visible
+            Environment.FOVCircle.Position = Vector2(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
+        else
+            Environment.FOVCircle.Visible = false
+        end
+
+        if Running and Environment.Settings.Enabled then
+            GetClosestPlayer()
+
+            if Environment.Locked and Environment.Locked.Character and Environment.LockedPart then
+                local humanoid = Environment.Locked.Character:FindFirstChildOfClass("Humanoid")
+                
+                if not humanoid or (Environment.Settings.AliveCheck and humanoid.Health <= 0) then
+                    CancelLock()
+                    return
+                end
+                
+                if not Environment.LockedPart.Parent then
+                    CancelLock()
+                    return
+                end
+                
+                local velocity = Environment.LockedPart.Velocity * Environment.Settings.PredictionVelocity
+                local predictedPosition = Environment.LockedPart.Position + velocity
+
+                if Environment.Settings.ThirdPerson then
+                    Environment.Settings.ThirdPersonSensitivity = mathclamp(Environment.Settings.ThirdPersonSensitivity, 0.1, 5)
+                    local Vector = Camera:WorldToViewportPoint(predictedPosition)
+                    mousemoverel(
+                        (Vector.X - UserInputService:GetMouseLocation().X) * Environment.Settings.ThirdPersonSensitivity,
+                        (Vector.Y - UserInputService:GetMouseLocation().Y) * Environment.Settings.ThirdPersonSensitivity
+                    )
+                else
+                    local direction = (predictedPosition - Camera.CFrame.Position).Unit
+                    local newCFrame = CFrame.new(Camera.CFrame.Position, Camera.CFrame.Position + direction)
+                    Camera.CFrame = Camera.CFrame:Lerp(newCFrame, Environment.Settings.Smoothness)
+                end
+
+                Environment.FOVCircle.Color = Environment.FOVSettings.LockedColor
+            end
+        end
+    end)
+
+    ServiceConnections.InputBeganConnection = UserInputService.InputBegan:Connect(function(Input)
+        if not Typing then
+            if Input.KeyCode == Enum.KeyCode[Environment.Settings.TriggerKey] then
+                if Environment.Settings.Toggle then
+                    Running = not Running
+                    if not Running then CancelLock() end
+                else
+                    Running = true
+                end
+            end
+        end
+    end)
+
+    ServiceConnections.InputEndedConnection = UserInputService.InputEnded:Connect(function(Input)
+        if not Typing and not Environment.Settings.Toggle then
+            if Input.KeyCode == Enum.KeyCode[Environment.Settings.TriggerKey] then
+                Running = false
+                CancelLock()
+            end
+        end
+    end)
+end
+
+Environment.Functions = {}
+
+function Environment.Functions:Exit()
+    for _, v in pairs(ServiceConnections) do
+        pcall(function() v:Disconnect() end)
+    end
+
+    if Environment.FOVCircle then
+        pcall(function() Environment.FOVCircle:Remove() end)
+    end
+
+    getgenv().Aimbot = nil
+end
+
+function Environment.Functions:Restart()
+    for _, v in pairs(ServiceConnections) do
+        pcall(function() v:Disconnect() end)
+    end
+    Load()
+end
+
+function Environment.Functions:ResetSettings()
+    Environment.Settings = {
+        Enabled = true,
+        TeamCheck = false,
+        AliveCheck = true,
+        WallCheck = false,
+        Sensitivity = 0,
+        ThirdPerson = false,
+        ThirdPersonSensitivity = 3,
+        TriggerKey = "MouseButton2",
+        Toggle = false,
+        LockPart = "Head",
+        PredictionVelocity = 0.165,
+        Smoothness = 0.075
+    }
+
+    Environment.FOVSettings = {
+        Enabled = true,
+        Visible = true,
+        Amount = 100,
+        Color = Color3.fromRGB(255, 255, 255),
+        LockedColor = Color3.fromRGB(255, 70, 70),
+        Transparency = 0.5,
+        Sides = 60,
+        Thickness = 3,
+        Filled = false
+    }
+end
+
+-- Initialize variables
+local Running = false
+local Typing = false
+local RequiredDistance = 2000
+
+-- Load the script
+Load()
