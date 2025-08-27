@@ -3,8 +3,8 @@ local HoldClick = true
 local Hotkey = 't'
 local ToggleOffKey = 'q'
 local HotkeyToggle = true
-local ContinuousShooting = true  -- Added continuous shooting option
-local ShootInterval = 0.1  -- Time between shots in seconds
+local ContinuousShooting = true
+local ShootInterval = 0.1
 
 -- Cache services and functions
 local RunService = game:GetService('RunService')
@@ -25,42 +25,33 @@ local lastTarget = nil
 local lastIsCharacter = false
 local lastShotTime = 0
 
--- Comprehensive character detection for R6, R15, and custom rigs
+-- Pre-cache common body parts for faster checking
+local BODY_PARTS = {
+    'Head', 'Torso', 'UpperTorso', 'Humanoid', 'Body', 'Chest', 
+    'UpperBody', 'Mesh', 'Geometry', 'Arm', 'Leg', 'Hand', 
+    'Foot', 'Shoulder', 'Hip'
+}
+
+-- Optimized character detection
 local function isCharacter(target)
     if not target then return false end
     
     local parent = target.Parent
     if not parent then return false end
     
-    -- Check if it's a character model (common patterns)
-    local humanoid = FindFirstChildOfClass(parent, 'Humanoid')
-    if humanoid then return true end
+    -- Quick check for Humanoid first (most common case)
+    if FindFirstChildOfClass(parent, 'Humanoid') then return true end
     
-    -- Check for humanoid by name
-    if FindFirstChild(parent, 'Humanoid') then return true end
-    
-    -- Check for R6 structure
-    if FindFirstChild(parent, 'Head') and FindFirstChild(parent, 'Torso') then
-        return true
-    end
-    
-    -- Check for R15 structure
-    if FindFirstChild(parent, 'Head') and FindFirstChild(parent, 'UpperTorso') then
-        return true
-    end
-    
-    -- Check for custom rig structures
+    -- Check for R6/R15 structure
     if FindFirstChild(parent, 'Head') then
-        -- Look for any body parts that might indicate a character
-        for _, partName in pairs({'Body', 'Torso', 'Chest', 'UpperBody', 'Mesh', 'Geometry'}) do
-            if FindFirstChild(parent, partName) then
-                return true
-            end
+        -- Check for torso (covers both R6 and R15)
+        if FindFirstChild(parent, 'Torso') or FindFirstChild(parent, 'UpperTorso') then
+            return true
         end
         
-        -- Check for limbs
-        for _, limb in pairs({'Arm', 'Leg', 'Hand', 'Foot', 'Shoulder', 'Hip'}) do
-            if FindFirstChild(parent, limb) or FindFirstChild(parent, limb .. 's') then
+        -- Fast check for predefined body parts
+        for i = 1, #BODY_PARTS do
+            if FindFirstChild(parent, BODY_PARTS[i]) then
                 return true
             end
         end
@@ -88,8 +79,8 @@ Mouse.KeyUp:Connect(function(key)
     end
 end)
 
--- Main loop with continuous shooting support
-RunService.RenderStepped:Connect(function()
+-- Use Heartbeat instead of RenderStepped for better performance
+RunService.Heartbeat:Connect(function()
     local currentTime = tick()
     
     if not Toggle then 
@@ -111,9 +102,8 @@ RunService.RenderStepped:Connect(function()
         return
     end
     
-    -- Check if target changed
-    local targetChanged = target ~= lastTarget
-    if targetChanged then
+    -- Only check if target changed
+    if target ~= lastTarget then
         lastTarget = target
         lastIsCharacter = isCharacter(target)
     end
@@ -128,20 +118,19 @@ RunService.RenderStepped:Connect(function()
             end
         else
             -- Continuous click mode with interval
-            if ContinuousShooting and (currentTime - lastShotTime) >= ShootInterval then
-                mouse1click()
-                lastShotTime = currentTime
-            elseif not ContinuousShooting and targetChanged then
-                -- Single shot on new target
+            if ContinuousShooting then
+                if (currentTime - lastShotTime) >= ShootInterval then
+                    mouse1click()
+                    lastShotTime = currentTime
+                end
+            else
                 mouse1click()
             end
         end
-    else
+    elseif CurrentlyPressed then
         -- Not a character, release if holding
-        if HoldClick and CurrentlyPressed then
-            CurrentlyPressed = false
-            mouse1release()
-        end
+        CurrentlyPressed = false
+        mouse1release()
         lastIsCharacter = false
     end
 end)
