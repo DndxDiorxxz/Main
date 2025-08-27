@@ -1,7 +1,7 @@
 -- Settings
 local HoldClick = true
-local Hotkey = 't'
-local ToggleOffKey = 'q' 
+local Hotkey = 't'  -- This is your activation key
+local ToggleOffKey = 'q'  -- This is your deactivation key
 local HotkeyToggle = true
 
 -- Cache everything
@@ -20,28 +20,23 @@ local mouse1release = mouse1release
 local FindFirstChild = game.FindFirstChild
 local FindFirstChildOfClass = game.FindFirstChildOfClass
 
--- Humanoid detection function (cached for performance)
+-- Humanoid detection function
 local function hasHumanoid(character)
     if not character then return false end
     
-    -- Fast path: check for Humanoid directly first
     local humanoid = FindFirstChildOfClass(character, 'Humanoid')
     if humanoid then return true end
     
-    -- Check common rig types and custom rig patterns
     if FindFirstChild(character, 'Humanoid') then return true end
     
-    -- Check for common rig components that indicate a player character
     if FindFirstChild(character, 'Head') and FindFirstChild(character, 'Torso') then
         return true
     end
     
-    -- Check for R15 rig components
     if FindFirstChild(character, 'Head') and FindFirstChild(character, 'UpperTorso') then
         return true
     end
     
-    -- Check for common custom rig patterns
     if FindFirstChild(character, 'Head') and (FindFirstChild(character, 'Body') or FindFirstChild(character, 'Mesh')) then
         return true
     end
@@ -49,10 +44,16 @@ local function hasHumanoid(character)
     return false
 end
 
--- Single optimized connection
+-- Key handling
 Mouse.KeyDown:Connect(function(key)
     if key == Hotkey then
         Toggle = HotkeyToggle and not Toggle or true
+    elseif key == ToggleOffKey then
+        Toggle = false  -- Force turn off with Q key
+        if HoldClick and CurrentlyPressed then
+            CurrentlyPressed = false
+            mouse1release()
+        end
     end
 end)
 
@@ -62,7 +63,7 @@ Mouse.KeyUp:Connect(function(key)
     end
 end)
 
--- Ultra-optimized main loop
+-- Main loop
 RunService.RenderStepped:Connect(function()
     if not Toggle then return end
     
@@ -84,12 +85,11 @@ RunService.RenderStepped:Connect(function()
         return
     end
     
-    -- Check if target's parent or any ancestor up to 3 levels has humanoid/character
     local current = parent
     local depth = 0
     local isCharacter = false
     
-    while current and depth < 4 do -- Limit depth to prevent infinite loops
+    while current and depth < 4 do
         if hasHumanoid(current) then
             isCharacter = true
             break
