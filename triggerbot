@@ -5,6 +5,7 @@ local ToggleOffKey = 'q'
 local HotkeyToggle = true
 local ContinuousShooting = true
 local ShootInterval = 0.1
+local HitboxRadius = 10
 
 -- Cache services and functions
 local RunService = game:GetService('RunService')
